@@ -62,6 +62,12 @@
 #  define MOLOGIE_DETOURS_MEMORY_REPROTECT(ADDRESS, SIZE, OLDPROT) MOLOGIE_DETOURS_MEMORY_POSIX_PAGEPROTECT((ADDRESS), (SIZE), PROT_READ | PROT_WRITE | PROT_EXEC)
 #  define MOLOGIE_DETOURS_MEMORY_WINDOWS_INIT(NAME)
 #endif
+
+#ifdef __APPLE__
+// Simple mprotect wrapper for macOS. Fixes code signature issues on macOS Big Sur and later.
+#  define MOLOGIE_DETOURS_MEMORY_SIMPLE_PROTECT(ADDRESS, SIZE, NEWPROT) (mprotect((void*)(ADDRESS), (SIZE), (NEWPROT)) == 0)
+#endif
+
 #ifdef __i386__
 #define MOLOGIE_DETOURS_DETOUR_SIZE (1 + sizeof(void*))
 #elif defined(__amd64__)
@@ -417,10 +423,18 @@ namespace MologieDetours
 			*reinterpret_cast<uint32_t*>(jmpBack + 1) = originalCodeJmpBackOffset;
 
 			// Make backupOriginalCode_ executable
+			#ifdef __APPLE__
+			// Use simple mprotect wrapper for macOS with READ & EXEC permissions
+			if(!MOLOGIE_DETOURS_MEMORY_SIMPLE_PROTECT(backupOriginalCode_, instructionCount_ + MOLOGIE_DETOURS_DETOUR_SIZE + 5, PROT_READ | PROT_EXEC))
+			{
+				throw DetourPageProtectionException("Failed to make copy of original code executable", backupOriginalCode_);
+			}
+			#else
 			if(!MOLOGIE_DETOURS_MEMORY_UNPROTECT(backupOriginalCode_, instructionCount_ + MOLOGIE_DETOURS_DETOUR_SIZE, dwProt))
 			{
 				throw DetourPageProtectionException("Failed to make copy of original code executable", backupOriginalCode_);
 			}
+			#endif
 
 			// Create a new trampoline which points at the detour
 			#ifdef __i386__
