@@ -21,11 +21,13 @@
 // CONFIGURATION
 // ============================================
 
-static bool shouldRunAutoTests()
+static bool initAutoTest()
 {
     const char* envVar = std::getenv("HYPERSPACE_AUTO_TEST");
     return envVar != nullptr && std::string(envVar) == "1";
 }
+
+static const bool ENABLE_AUTO_TEST = initAutoTest();
 
 // ============================================
 // TEST STATE
@@ -56,7 +58,7 @@ HOOK_METHOD(CApp, OnLoop, () -> void)
     LOG_HOOK("HOOK_METHOD -> CApp::OnLoop -> Begin (TestScript.cpp)\n");
     super();
 
-    if (!shouldRunAutoTests() || testsComplete) return;
+    if (!ENABLE_AUTO_TEST || testsComplete) return;
 
     try
     {
