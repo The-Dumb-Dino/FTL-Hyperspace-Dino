@@ -17,7 +17,7 @@ if [ $# -lt 2 ]; then
     echo "Usage: $0 <dylib_path> <ftl_binary_path>"
     echo ""
     echo "Example:"
-    echo "  $0 build-darwin-1.6.13-debug/Hyperspace.1.6.13.amd64.dylib \$HOME/Games/Heroic/FasterThanLight/FTL1.6.13-base.app/Contents/MacOS/FTL"
+    echo "  $0 build-darwin-1.6.13-debug/Hyperspace.1.6.13.amd64.dylib \$HOME/Games/FasterThanLight/FTL1.6.13-base.app/Contents/MacOS/FTL"
     exit 1
 fi
 
