@@ -10,6 +10,7 @@
 
 #ifdef _WIN32
     #include <windows.h>
+    #include <shellapi.h>
 #else
     #include <unistd.h>
     #include <sys/types.h>

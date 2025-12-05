@@ -10,7 +10,6 @@
         "boost-math",
         "boost-format",
         "boost-crc",
-   
         "discord-rpc",
         "opengl",
         "lua",
