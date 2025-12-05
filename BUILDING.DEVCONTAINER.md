@@ -13,7 +13,7 @@ Requires Docker.
 
 1. Ensure that your current working directory is the repository's root directory.
      - For example, if your repository is at `/home/$USER`, then your current working directory should be `/home/$USER/FTL-Hyperspace`
-2. `docker run -it --rm -v $PWD:/ftl ghcr.io/fr-eed/hs-devcontainer`
+2. `docker run -it --rm -v $PWD:/ftl ghcr.io/ftl-hyperspace/hs-devcontainer`
   * (`$PWD` may vary by your shell, e.g. if it's cmd then use `%cd%` instead)
   * If you want to build the image by yourself (e.g., changed the .devcontainer directory),
     build and run the image using following command:
