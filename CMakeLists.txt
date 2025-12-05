@@ -9,10 +9,14 @@ if(APPLE)
 endif()
 
 # Let vcpkg handle Boost automatically
-find_package(Boost REQUIRED)
+find_package(Boost REQUIRED COMPONENTS filesystem system)
 
 # Let vcpkg handle Lua automatically
 find_package(Lua REQUIRED)
+
+# Let vcpkg handle minizip automatically
+find_package(minizip REQUIRED)
+find_package(ZLIB REQUIRED)
 
 if(APPLE)
     # explicitly link the x86_64 SDL2 static library on macOS (needs to be installed via x86 Homebrew)
@@ -79,11 +83,21 @@ target_include_directories(
 target_link_libraries(
     Hyperspace PRIVATE
     ${LUA_LIBRARIES}
+    minizip::minizip
+    ZLIB::ZLIB
+    Boost::filesystem
     Threads::Threads
 )
 
+file(GLOB_RECURSE SRC_SOURCES
+     "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp"
+     "${CMAKE_CURRENT_SOURCE_DIR}/src/*.h"
+)
+
+
 target_sources(
     Hyperspace PRIVATE
+    ${SRC_SOURCES}
     AbilityDrone.cpp
     AbilityDrone.h
     AdditionalWeaponSlots.cpp
