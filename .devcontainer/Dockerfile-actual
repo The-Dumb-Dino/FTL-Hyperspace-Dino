@@ -1,5 +1,5 @@
 # 1st image: Build mingw-w64 and llvm with modified configuration
-FROM ubuntu:focal as toolchain-builder
+FROM --platform=linux/amd64 ubuntu:focal as toolchain-builder
 
 ENV DEBIAN_FRONTEND=noninteractive
 COPY mingw.patch /mingw-build/
@@ -63,7 +63,7 @@ RUN mkdir -p /llvm-build/install /llvm-build/build \
 # -------------------------------------------------------------------------------
 
 # 2nd image: devcontainer
-FROM ubuntu:focal
+FROM --platform=linux/amd64 ubuntu:focal
 
 ENV DEBIAN_FRONTEND=noninteractive
 
