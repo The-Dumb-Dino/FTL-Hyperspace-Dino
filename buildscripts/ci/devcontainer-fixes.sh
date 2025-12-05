@@ -4,19 +4,15 @@ set -e
 # Update vcpkg to get latest package versions
 (cd /vcpkg && git pull && ./bootstrap-vcpkg.sh)
 
-# Pre-install boost-atomic for Windows MinGW cross-compile
-# This ensures boost_atomic.lib is available before other packages try to link against it
-/vcpkg/vcpkg install boost-atomic:x86-windows-ftl 2>/dev/null || true
+# Try to install all packages to both Windows build directories
+# boost-filesystem will fail due to boost-atomic lib naming, that's expected
+/vcpkg/vcpkg install --triplet=x86-windows-ftl --x-install-root=build-windows-debug/vcpkg_installed || true
+/vcpkg/vcpkg install --triplet=x86-windows-ftl --x-install-root=build-windows-release/vcpkg_installed || true
 
-# Create symlinks in global vcpkg so they're available during CMake config
-# When CMake copies packages into build directories, these symlinks come along
-for lib_path in /vcpkg/installed/x86-windows-ftl/{lib,debug/lib}; do
-    if [ -d "$lib_path" ] && [ -f "$lib_path/boost_atomic.lib" ]; then
-        if [ ! -e "$lib_path/libboost_atomic.a" ]; then
-            ln -s boost_atomic.lib "$lib_path/libboost_atomic.a"
-        fi
-    fi
+# Fix boost_atomic.lib naming in both build directories so filesystem can link
+for build_dir in build-windows-debug build-windows-release; do
+    cp "$build_dir/vcpkg_installed/x86-windows-ftl/lib/boost_atomic.lib" "$build_dir/vcpkg_installed/x86-windows-ftl/lib/libboost_atomic.a"
+    cp "$build_dir/vcpkg_installed/x86-windows-ftl/debug/lib/boost_atomic.lib" "$build_dir/vcpkg_installed/x86-windows-ftl/debug/lib/libboost_atomic.a"
 done
-
 
 echo "Devcontainer fixes applied successfully"

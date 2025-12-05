@@ -3,12 +3,14 @@
     "name": "hyperspace",
     "version": "0.1.0",
     "dependencies": [
+        "boost-atomic",
+        "boost-filesystem",
         "boost-conversion",
         "boost-algorithm",
         "boost-math",
         "boost-format",
         "boost-crc",
-        "boost-filesystem",
+   
         "discord-rpc",
         "opengl",
         "lua",
