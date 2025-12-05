@@ -45,8 +45,8 @@ RUN cd /mingw-build/mingw-dwarf2-build \
 
 # llvm: Fetch source and patch. Patch details:
 # * ABI incompatibility fix for llvm-project#58255
-## Force llvm 15.0.0 as it is the last version supporting Ubuntu 20.04 officially
-RUN git clone --branch llvmorg-15.0.0 --single-branch \
+## Force llvm 12.0.0 to match LLVM patch
+RUN git clone --branch llvmorg-12.0.0 --single-branch \
         "https://github.com/llvm/llvm-project.git" /llvm-build/src \
     && cd /llvm-build/src \
     && patch -p1 -s < /llvm-build/llvm.patch
