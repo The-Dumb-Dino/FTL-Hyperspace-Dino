@@ -1,4 +1,4 @@
 #!/bin/bash
 
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
-docker run --rm -v $SCRIPT_DIR/..:/workspaces/FTL-Hyperspace ghcr.io/ftl-hyperspace/hs-devcontainer bash -c "(cd vcpkg && git pull && ./bootstrap-vcpkg.sh) && cd /workspaces/FTL-Hyperspace && buildscripts/buildall-release-only.sh"
+docker run --rm -v $SCRIPT_DIR/..:/workspaces/FTL-Hyperspace ghcr.io/ftl-hyperspace/hs-devcontainer bash -c "cd /workspaces/FTL-Hyperspace && source buildscripts/ci/devcontainer-fixes.sh && buildscripts/buildall-release-only.sh"
