@@ -132,6 +132,12 @@ RUN ln -s /usr/gcc-4.8-clang-toolchain/include/asm-generic /usr/gcc-4.8-clang-to
 RUN rm /usr/lib/gcc/i686-w64-mingw32/9.4-posix/include/*intrin* \
     && cp /usr/local/lib/clang/12.0.0/include/*intrin* /usr/lib/gcc/i686-w64-mingw32/9.4-posix/include/
 
+# Copy vcpkg overlay for Windows MinGW cross-compile boost fix
+COPY .devcontainer/vcpkg-overlays /vcpkg-overlays
+
+# Set VCPKG_OVERLAY_PORTS for Windows MinGW builds
+ENV VCPKG_OVERLAY_PORTS=/vcpkg-overlays
+
 # Cleanup apt lists from the image
 RUN rm -rf /var/lib/apt/lists/*
 
