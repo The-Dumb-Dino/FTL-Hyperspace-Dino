@@ -2,19 +2,19 @@
     "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg/master/scripts/vcpkg.schema.json",
     "name": "hyperspace",
     "version": "0.1.0",
+    "description": "Hyperspace mod required libs. !!!Do not add boost-filesystem until boost-atomic 'lib -> a' naming/linking issue is fixed in vcpkg.!!!",
     "dependencies": [
+        "boost-atomic",
         "boost-conversion",
         "boost-algorithm",
         "boost-math",
         "boost-format",
         "boost-crc",
-        "boost-filesystem",
         "discord-rpc",
         "opengl",
         "lua",
         "minizip"
-    ],
-
+    ],   
     "builtin-baseline": "8e1f46de11423e5f7d2395458f5252738ffffbbd",
     "overrides": [
         {
