@@ -10,4 +10,4 @@ source "$SCRIPT_DIR/../.devcontainer/devcontainer.sh"
 
 COMMAND="${1:?Error: Command argument is required}"
 
-docker run --rm -v $SCRIPT_DIR/..:/workspaces/FTL-Hyperspace "$DEVCONTAINER_FULL" bash -c "cd /workspaces/FTL-Hyperspace && source buildscripts/ci/devcontainer-fixes.sh && $COMMAND"
+docker run --rm -v $SCRIPT_DIR/..:/workspaces/FTL-Hyperspace "$DEVCONTAINER_FULL" bash -c "cd /workspaces/FTL-Hyperspace && source .devcontainer/devcontainer-fixes.sh && $COMMAND"
