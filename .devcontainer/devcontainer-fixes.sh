@@ -3,7 +3,7 @@ set -e
 
 # Update vcpkg to get latest package versions to avoid issues with old cached versions
 # Note: remove when new devcontainer image will be built
-(cd /vcpkg && git pull && ./bootstrap-vcpkg.sh)
+# Not needed anymore. Devcontainer image is up to date. # (cd /vcpkg && git pull && ./bootstrap-vcpkg.sh)
 
 
 # This script applies fixes to a bug caused by a x86-windows-ftl.cmake triplet or/and toolchain.
@@ -14,7 +14,9 @@ set -e
 # Try to install all packages to both Windows build directories
 # boost-filesystem will fail due to boost-atomic lib naming, that's expected
 /vcpkg/vcpkg install --triplet=x86-windows-ftl --x-install-root=build-windows-debug/vcpkg_installed || true
-/vcpkg/vcpkg install --triplet=x86-windows-ftl --x-install-root=build-windows-release/vcpkg_installed || true
+
+# Repeat the process for release build (skip vcpkg install to save time)
+cp -r build-windows-debug build-windows-release
 
 # Fix boost_atomic.lib naming in both build directories so filesystem can link
 for build_dir in build-windows-debug build-windows-release; do
