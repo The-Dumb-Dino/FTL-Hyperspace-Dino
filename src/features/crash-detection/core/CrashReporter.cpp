@@ -81,7 +81,9 @@ std::string CrashReporter::CreateBugReportZip()
             savePrefix + "_continue.sav",
             "FTL.log",
             "FTL_HS.log",
-            "zhl.log"
+            "FTL_HS.log.bak",
+            "zhl.log",
+            "zhl.log.bak"
         };
 
         // Add each file if it exists
