@@ -89,28 +89,6 @@ target_link_libraries(
     Threads::Threads
 )
 
-# Enable testing - controlled by ENABLE_TESTING option
-option(ENABLE_TESTING "Enable Hyperspace automated testing" OFF)
-
-if(ENABLE_TESTING)
-    # Automatically include all test files recursively
-    # NEEDS to be linked before other source files 
-    # to ensure TestScript is initialized first and is first to hook into the game loop
-    file(GLOB_RECURSE TEST_SOURCES
-     "${CMAKE_CURRENT_SOURCE_DIR}/tests/*.cpp"
-     "${CMAKE_CURRENT_SOURCE_DIR}/tests/*.h"
-    )
-    target_sources(
-        Hyperspace PRIVATE
-        ${TEST_SOURCES}
-    )
-    target_compile_definitions(Hyperspace PRIVATE HYPERSPACE_TESTING)
-    message(STATUS "Hyperspace Testing: ENABLED")
-else()
-    message(STATUS "Hyperspace Testing: DISABLED")
-endif()
-
-
 # Automatically include all source files from root directory
 # TODO: Move sources to src/ directory? (Original project had them in root)
 file(GLOB ROOT_SOURCES
@@ -124,6 +102,8 @@ list(FILTER ROOT_SOURCES EXCLUDE REGEX "FTLGame.*\\.cpp$")
 # Exclude Discord files (added conditionally later based on USE_DISCORD option)
 list(FILTER ROOT_SOURCES EXCLUDE REGEX "DiscordIntegration\\.")
 
+# Exclude zhl.cpp (added at end to ensure proper static initialization order)
+list(FILTER ROOT_SOURCES EXCLUDE REGEX "zhl\\.cpp$")
 
 # Include lua sources
 file(GLOB LUA_SOURCES
@@ -131,23 +111,45 @@ file(GLOB LUA_SOURCES
     "${CMAKE_CURRENT_SOURCE_DIR}/lua/*.h"
 )
 
+# Include src/ sources
 file(GLOB_RECURSE SRC_SOURCES
      "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp"
      "${CMAKE_CURRENT_SOURCE_DIR}/src/*.h"
 )
 
+# Enable testing - controlled by ENABLE_TESTING option
+option(ENABLE_TESTING "Enable Hyperspace automated testing" OFF)
+
+if(ENABLE_TESTING)
+    # Automatically include all test files recursively
+    file(GLOB_RECURSE TEST_SOURCES
+     "${CMAKE_CURRENT_SOURCE_DIR}/tests/*.cpp"
+     "${CMAKE_CURRENT_SOURCE_DIR}/tests/*.h"
+    )
+    target_compile_definitions(Hyperspace PRIVATE HYPERSPACE_TESTING)
+    message(STATUS "Hyperspace Testing: ENABLED")
+else()
+    set(TEST_SOURCES "")
+    message(STATUS "Hyperspace Testing: DISABLED")
+endif()
+
+# Add all sources in a single target_sources call to ensure proper linking order
+# TEST_SOURCES must come first to ensure TestScript hooks into the game loop first
 target_sources(
     Hyperspace PRIVATE
 
     # Main junction for os-specific code
     FTLGame.h
     FTLGame.cpp
-    
-    # all root source files (will be deprecated in future)
-    ${ROOT_SOURCES}
+
+    # Test sources first (if enabled) - ensures TestScript initializes first
+    ${TEST_SOURCES}
 
     # All src/ files (in future, consider moving ROOT_SOURCES to src/)
     ${SRC_SOURCES}
+
+    # all root source files (will be deprecated in future)
+    ${ROOT_SOURCES}
 
     # all lua files
     ${LUA_SOURCES}
@@ -155,7 +157,9 @@ target_sources(
     # Generated files
     ${CMAKE_CURRENT_SOURCE_DIR}/lua/swigluarun.h
     ${CMAKE_CURRENT_SOURCE_DIR}/Version.autogen.hpp
-        
+
+    # zhl.cpp MUST be last to ensure all hooks are registered before ZHL::Init() runs
+    zhl.cpp
 )
 
 add_custom_command(
