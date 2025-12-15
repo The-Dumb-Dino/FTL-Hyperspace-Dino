@@ -2,6 +2,10 @@
 #include <stdio.h>
 #include "Global.h"
 
+#ifdef __APPLE__
+#include "src/features/freeze-watchdog/FreezeWatchdog.h"
+#endif
+
 // TODO: Add GCC poison pragma for some of the Windows specific bullshit functions & types so that we stop other devs from reintroducing them. https://gcc.gnu.org/onlinedocs/cpp/Pragmas.html#Pragmas (like sfopen!)
 // TODO: Add GCC dependency pragma to Lua parser for the FTLGame files to have GCC auto complain if you updated the ZHL files (if it's possible to match a whole folder, not sure)
 // TODO: Add GCC line preprocessor directives for the Lua parser to reference the correct original lines in the ZHL files maybe? https://gcc.gnu.org/onlinedocs/cpp/Line-Control.html#Line-Control
@@ -79,5 +83,7 @@ void __attribute__((constructor)) launchHyperspace() {
             ZHL::Init();
 
             G_->Initialize();
+
+            FreezeWatchdog::Start();
 }
 #endif
