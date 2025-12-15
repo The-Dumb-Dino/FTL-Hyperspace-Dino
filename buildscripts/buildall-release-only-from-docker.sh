@@ -1,4 +1,4 @@
 #!/bin/bash
 
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
-$SCRIPT_DIR/../docker-run-in-devcontainer.sh buildscripts/windows/build-releaseonly.sh
+$SCRIPT_DIR/docker-run-in-devcontainer.sh buildscripts/buildall-release-only.sh

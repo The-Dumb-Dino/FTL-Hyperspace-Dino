@@ -9,10 +9,14 @@ if(APPLE)
 endif()
 
 # Let vcpkg handle Boost automatically
-find_package(Boost REQUIRED)
+find_package(Boost REQUIRED COMPONENTS filesystem system)
 
 # Let vcpkg handle Lua automatically
 find_package(Lua REQUIRED)
+
+# Let vcpkg handle minizip automatically
+find_package(minizip REQUIRED)
+find_package(ZLIB REQUIRED)
 
 if(APPLE)
     # explicitly link the x86_64 SDL2 static library on macOS (needs to be installed via x86 Homebrew)
@@ -79,6 +83,9 @@ target_include_directories(
 target_link_libraries(
     Hyperspace PRIVATE
     ${LUA_LIBRARIES}
+    minizip::minizip
+    ZLIB::ZLIB
+    Boost::filesystem
     Threads::Threads
 )
 
@@ -124,6 +131,11 @@ file(GLOB LUA_SOURCES
     "${CMAKE_CURRENT_SOURCE_DIR}/lua/*.h"
 )
 
+file(GLOB_RECURSE SRC_SOURCES
+     "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp"
+     "${CMAKE_CURRENT_SOURCE_DIR}/src/*.h"
+)
+
 target_sources(
     Hyperspace PRIVATE
 
@@ -131,8 +143,11 @@ target_sources(
     FTLGame.h
     FTLGame.cpp
     
-    # all src files
+    # all root source files (will be deprecated in future)
     ${ROOT_SOURCES}
+
+    # All src/ files (in future, consider moving ROOT_SOURCES to src/)
+    ${SRC_SOURCES}
 
     # all lua files
     ${LUA_SOURCES}
