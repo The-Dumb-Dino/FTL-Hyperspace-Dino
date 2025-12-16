@@ -19,8 +19,8 @@ static std::string g_heartbeatFile;
 static uint64_t g_lastHeartbeat = 0;
 
 static constexpr int FREEZE_TIMEOUT_SECONDS = 5;
-static constexpr int GRACE_PERIOD_SECONDS = 10;
-static constexpr uint64_t HEARTBEAT_INTERVAL_MS = 100;
+static constexpr int GRACE_PERIOD_SECONDS = 15;
+static constexpr uint64_t HEARTBEAT_INTERVAL_MS = 1000;
 
 static uint64_t GetCurrentTimeMs()
 {
