@@ -308,15 +308,6 @@ HOOK_STATIC(FileHelper, createBinaryFile, (const std::string& fileName) -> int)
 }
 
 
-HOOK_STATIC(FileHelper, getSaveFile, () -> std::string)
-{
-    LOG_HOOK("HOOK_STATIC -> FileHelper::getSaveFile -> Begin (SaveFile.cpp)\n")
-    std::string str = super();
-
-    str.replace(str.size()-12, str.size(), SaveFileHandler::instance->savePrefix + "_continue.sav");
-
-    return str;
-}
 
 HOOK_STATIC(FileHelper, deleteAllSaveFiles, () -> void)
 {
