@@ -60,7 +60,7 @@ static void RunStoreCreationTest(TestFramework::Test& test, TestFramework::TestS
     }, 0);
 }
 
-// Auto-register this test with NewGameSeeded scenario
+// Auto-register
 static TestFramework::TestRegistrar _storeCreationTest("StoreCreation", RunStoreCreationTest, "NewGameSeeded");
 
 

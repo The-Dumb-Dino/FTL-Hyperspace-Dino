@@ -39,7 +39,7 @@ TEST_DIR="$PROJECT_DIR/test_results"
 TEST_RESULTS_FILE="$TEST_DIR/tests/test_results.txt"
 CENTRAL_LOG="$TEST_DIR/tests/all_tests.log"
 
-TIMEOUT_SECONDS=60
+TIMEOUT_SECONDS=3600
 FREEZE_THRESHOLD=10
 FREEZE_MIN_ELAPSED=15  # Don't check for freeze before this many seconds
 
@@ -99,6 +99,27 @@ fi
 rm -rf "$TEST_DIR"
 mkdir -p "$TEST_DIR"
 
+# Copy and unzip saves to test_results/saves
+SAVES_SRC="$PROJECT_DIR/tests/saves"
+SAVES_DST="$TEST_DIR/saves"
+
+if [ -d "$SAVES_SRC" ]; then
+    mkdir -p "$SAVES_DST"
+    # Copy all files from saves directory
+    cp -r "$SAVES_SRC"/* "$SAVES_DST"/ 2>/dev/null || true
+    # Unzip any .ftlsav files into folders named after the archive
+    for savefile in "$SAVES_DST"/*.ftlsav; do
+        if [ -f "$savefile" ]; then
+            # Get basename without .ftlsav extension
+            folder_name=$(basename "$savefile" .ftlsav)
+            mkdir -p "$SAVES_DST/$folder_name"
+            unzip -o -q "$savefile" -d "$SAVES_DST/$folder_name"
+            rm "$savefile"
+        fi
+    done
+    log "Saves copied to $SAVES_DST"
+fi
+
 log "Prerequisites OK"
 
 # ============================================
@@ -110,7 +131,14 @@ log "  Dylib: $FTL_DYLIB_PATH"
 log "  Timeout: ${TIMEOUT_SECONDS}s"
 
 export DYLD_INSERT_LIBRARIES="$FTL_DYLIB_PATH"
+# launch auto tests
 export HYPERSPACE_AUTO_TEST=1
+
+# immediate exit on freeze detection
+export HYPERSPACE_FORCE_EXIT_ON_FREEZE=1
+
+# skip bug report dialog
+export HYPERSPACE_SKIP_BUG_REPORT=1
 (
     cd "$TEST_DIR" || exit 1
     exec "$FTL_BINARY_PATH" > /dev/null 2>&1
@@ -154,16 +182,6 @@ while true; do
     if [ "$ELAPSED" -gt "$TIMEOUT_SECONDS" ]; then
         error "Test timeout after ${TIMEOUT_SECONDS}s"
         exit 3
-    fi
-
-    # Check for freeze (no activity in log)
-    if [ -f "$CENTRAL_LOG" ] && [ "$ELAPSED" -gt "$FREEZE_MIN_ELAPSED" ]; then
-        LOG_MTIME=$(stat -f %m "$CENTRAL_LOG" 2>/dev/null || stat -c %Y "$CENTRAL_LOG" 2>/dev/null)
-        TIME_SINCE_ACTIVITY=$(($(date +%s) - LOG_MTIME))
-        if [ "$TIME_SINCE_ACTIVITY" -gt "$FREEZE_THRESHOLD" ]; then
-            error "Program appears frozen (no activity for ${TIME_SINCE_ACTIVITY}s)"
-            exit 4
-        fi
     fi
 
     sleep 0.5

@@ -1,6 +1,8 @@
 #pragma once
 #include "../framework/Core.h"
 
+struct GenericButton;
+
 /**
  * GameAccess::State
  *
@@ -42,5 +44,8 @@ namespace GameAccess
 
         // Test isolation - managing game state between tests
         static void returnToMainMenu();
+
+        // UI interaction
+        static void clickButton(GenericButton* button);
     };
 }

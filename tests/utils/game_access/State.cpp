@@ -14,7 +14,7 @@ namespace GameAccess
 
     bool State::isInMenu()
     {
-        return !isInGame();
+        return G_ && G_->GetCApp() && G_->GetCApp()->menu.bOpen;
     }
 
     // ============================================
@@ -139,8 +139,27 @@ namespace GameAccess
     void State::returnToMainMenu()
     {
         if (G_ && G_->GetWorld())
-        {            
+        {
             G_->GetCApp()->menu.Open();
         }
+    }
+
+    // ============================================
+    // UI Interaction
+    // ============================================
+
+    void State::clickButton(GenericButton* button)
+    {
+        if (!button || !G_ || !G_->GetCApp()) return;
+
+        // Get button hitbox center
+        Globals::Rect hitbox = button->hitbox;
+        int clickX = hitbox.x + hitbox.w / 2;
+        int clickY = hitbox.y + hitbox.h / 2;
+
+        // MouseMove to set hover state, then click
+        MainMenu* menu = &G_->GetCApp()->menu;
+        menu->MouseMove(clickX, clickY);
+        menu->MouseClick(clickX, clickY);
     }
 }

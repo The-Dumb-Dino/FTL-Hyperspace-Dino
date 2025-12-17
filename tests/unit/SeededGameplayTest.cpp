@@ -35,7 +35,7 @@ static void RunSeededGameplayTest(TestFramework::Test& test, TestFramework::Test
     // - Sector transition
 }
 
-// Auto-register this test with NewGameSeeded scenario
+// Auto-register
 static TestFramework::TestRegistrar _seededGameplayTest("SeededGameplay", RunSeededGameplayTest, "NewGameSeeded");
 
 
