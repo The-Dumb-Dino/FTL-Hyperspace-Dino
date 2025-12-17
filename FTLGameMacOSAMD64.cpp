@@ -17762,7 +17762,7 @@ namespace _func1415
 namespace _func1416
 {
     static void *func = 0;
-	static FunctionDefinition funcObj("StatusEffect::GetNebulaEffect", typeid(StatusEffect (*)()), ".55", nullptr, 0, 0, &func);
+	static FunctionDefinition funcObj("StatusEffect::GetNebulaEffect", typeid(StatusEffect (*)()), ".554889e5", nullptr, 0, 0, &func);
 }
 
 StatusEffect StatusEffect::GetNebulaEffect()
