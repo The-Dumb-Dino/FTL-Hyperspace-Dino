@@ -3,6 +3,16 @@
 #include "../core/CrashReporter.h"
 #include "../ui/CrashDialogManager.h"
 #include "Global.h"
+#include <cstdlib>
+#include <string>
+
+static bool initSkipBugReport()
+{
+    const char* envVar = std::getenv("HYPERSPACE_SKIP_BUG_REPORT");
+    return envVar != nullptr && std::string(envVar) == "1";
+}
+
+static const bool SKIP_BUG_REPORT = initSkipBugReport();
 
 CrashReportFlow* CrashReportFlow::instance = nullptr;
 
@@ -35,6 +45,12 @@ void CrashReportFlow::OnMenuOpen()
 
     CrashDetector::GetInstance()->OnInit();
     initialized = true;
+
+    // Skip bug report dialog if env var is set
+    if (SKIP_BUG_REPORT)
+    {
+        return;
+    }
 
     // If crash detected, show Dialog 1: "Do you want to report this crash?"
     if (CrashDetector::GetInstance()->WasCrashDetected())

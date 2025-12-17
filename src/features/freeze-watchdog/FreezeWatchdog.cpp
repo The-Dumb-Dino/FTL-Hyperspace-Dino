@@ -13,6 +13,14 @@
 
 namespace FreezeWatchdog {
 
+static bool initForceExitOnFreeze()
+{
+    const char* envVar = std::getenv("HYPERSPACE_FORCE_EXIT_ON_FREEZE");
+    return envVar != nullptr && std::string(envVar) == "1";
+}
+
+static const bool FORCE_EXIT_ON_FREEZE = initForceExitOnFreeze();
+
 static pid_t g_gamePid = 0;
 static pid_t g_watchdogPid = 0;
 static std::string g_heartbeatFile;
@@ -113,7 +121,13 @@ static void WatchdogLoop()
         int age = GetFileAgeSeconds(g_heartbeatFile);
         if (age > FREEZE_TIMEOUT_SECONDS)
         {
-            if (ShowFreezeDialog())
+            if (FORCE_EXIT_ON_FREEZE)
+            {
+                // Auto-exit mode - immediately kill without dialog
+                kill(g_gamePid, SIGKILL);
+                break;
+            }
+            else if (ShowFreezeDialog())
             {
                 // User chose Force Quit
                 kill(g_gamePid, SIGKILL);
