@@ -2,6 +2,7 @@
 #include "../utils/game_access/State.h"
 #include "../utils/game_access/Seeding.h"
 #include "../../Global.h"
+#include <cstdlib>
 
 /**
  * New Game Seeded Scenario
@@ -16,7 +17,7 @@ static void setupNewGameSeeded(TestFramework::Test* test, TestFramework::TestSta
 {
     test->section("Scenario: New Game Seeded");
 
-    const int randomSeed =  random() % 100000;
+    const int randomSeed = rand() % 100000;
 
     // Get seed parameter (default randomSeed)
     const int seed = params.getInt("seed", randomSeed);
