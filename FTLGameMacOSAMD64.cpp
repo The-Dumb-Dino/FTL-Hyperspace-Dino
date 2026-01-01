@@ -5576,7 +5576,7 @@ void CrewManifest::MouseClick(int mX, int mY)
 namespace _func444
 {
     static void *func = 0;
-	static FunctionDefinition funcObj("CrewManifest::Update", typeid(void (CrewManifest::*)()), ".554889e541574156534883ec584989fe0f", nullptr, 0, 0, &func);
+	static FunctionDefinition funcObj("CrewManifest::Update", typeid(void (CrewManifest::*)()), ".554889e541574156534883ec??4989fe0f", nullptr, 0, 0, &func);
 }
 
 void CrewManifest::Update()
