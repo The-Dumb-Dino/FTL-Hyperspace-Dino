@@ -3064,7 +3064,7 @@ void CachedPrimitive::destructor()
 namespace _func247
 {
     static void *func = 0;
-	static FunctionDefinition funcObj("CachedPrimitive::OnRender", typeid(void (CachedPrimitive::*)(const GL_Color &)), "!.554889e54156", nullptr, 0, 0, &func);
+	static FunctionDefinition funcObj("CachedPrimitive::OnRender", typeid(void (CachedPrimitive::*)(const GL_Color &)), "!554889e5535089f38b7f08", nullptr, 0, 0, &func);
 }
 
 void CachedPrimitive::OnRender(const GL_Color &color)
