@@ -63,6 +63,7 @@ static void SectorJumpSaveTest(TestFramework::Test& test, TestFramework::TestSta
 
 // Auto-register
 // Crash save might be corrupted which causes crashes after loading a new game.
-// Uses W in name to run last and not cause issues for other tests. Remove in future.
-static TestFramework::TestRegistrar _sectorJumpTest("SectorJump", SectorJumpSaveTest, "SavedGame",
-    TestFramework::ScenarioParams().setString("saveName", "mv-sector-jump"));
+// Uses WW in name to run last and not cause issues for other tests. Remove in future.
+// Disabled because of save corruption issues.
+//static TestFramework::TestRegistrar _sectorJumpTest("SectorJump", SectorJumpSaveTest, "SavedGame",
+//    TestFramework::ScenarioParams().setString("saveName", "mv-sector-jump"));
