@@ -6,7 +6,7 @@ cleanup __amd64 void CrewManifest::OnInit(CrewManifest *this, ShipManager* ship)
 cleanup __amd64 void CrewManifest::Close(CrewManifest *this);
 "!.554889e54156534989fe4183be88":
 cleanup __amd64 void CrewManifest::MouseClick(CrewManifest *this, int mX, int mY);
-".554889e541574156534883ec584989fe0f":
+".554889e541574156534883ec??4989fe0f":
 cleanup __amd64 void CrewManifest::Update(CrewManifest *this);
 ".554889e541574156415453":
 cleanup __amd64 void CrewManifest::OnKeyDown(CrewManifest *this, SDLKey key);

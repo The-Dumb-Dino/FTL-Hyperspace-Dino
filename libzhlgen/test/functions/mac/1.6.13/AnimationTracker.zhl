@@ -1,6 +1,6 @@
 "554889e50f28c880":
 cleanup __amd64 float AnimationTracker::Progress(AnimationTracker *this, float speed);
-".554889e54088770c":
+"554889e54088770cf30f114718c7471c00000000":
 cleanup __amd64 void AnimationTracker::SetLoop(AnimationTracker *this, bool loop, float loopDelay);
 ".554889e5f30f59":
 cleanup __amd64 void AnimationTracker::SetProgress(AnimationTracker *this, float time);

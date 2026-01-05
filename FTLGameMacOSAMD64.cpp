@@ -248,17 +248,10 @@ void Animation::destructor()
 	return execfunc(this);
 }
 
-namespace _func19_anchor
-{
-    static void *func = 0;
-	// Anchor for Animation::constructor - matches unique epilogue+call+NOP pattern ending at function start
-	static FunctionDefinition funcObj("Animation::constructor_DO_NOT_HOOK", typeid(void (Animation::*)()), "415f5dc3488d7db0e8????17000f1f00", nullptr, 0, 0, &func);
-}
-
 namespace _func19
 {
     static void *func = 0;
-	static FunctionDefinition funcObj("Animation::constructor", typeid(void (Animation::*)(const std::string &, int , float , Pointf , int , int , int , int )), ".554889e54157415641554154534883ec38", nullptr, 0, 0, &func);
+	static FunctionDefinition funcObj("Animation::constructor", typeid(void (Animation::*)(const std::string &, int , float , Pointf , int , int , int , int )), "554889e54157415641554154534883ec384989fe41c74620|554889e54157415641554154534883ec3844894dd044", nullptr, 0, 0, &func);
 }
 
 void Animation::constructor(const std::string &image, int length, float time, Pointf position, int imageWidth, int imageHeight, int stripStartX, int numFrames)
@@ -2664,7 +2657,6 @@ bool CSurface::GL_BlitPixelImage(GL_Texture *tex, float x, float y, float x2, fl
 namespace _func213
 {
     static void *func = 0;
-	// GOG | Steam - unique patterns at function start, no anchors needed
 	static FunctionDefinition funcObj("CSurface::GL_BlitImagePartial", typeid(bool (*)(GL_Texture *, float , float , float , float , float , float , float , float , float , GL_Color , bool )), "440f28c485f67504440f28c5554889e5|4084f6440f28c47504440f28c5554889e5", nullptr, 0, 0, &func);
 }
 
@@ -6097,7 +6089,7 @@ void CrewMember::destructor()
 namespace _func484
 {
     static void *func = 0;
-	static FunctionDefinition funcObj("CrewMember::CleanupDO_NOT_HOOK", typeid(void (CrewMember::*)()), "!.554889e553504889fbe812fd", nullptr, 0, 0, &func);
+	static FunctionDefinition funcObj("CrewMember::Cleanup", typeid(void (CrewMember::*)()), "!.554889e553504889fbe812fd", nullptr, 0, 0, &func);
 }
 
 void CrewMember::Cleanup()
@@ -17043,7 +17035,7 @@ void StarMap::SelectNewSector(int choice)
 namespace _func1359
 {
     static void *func = 0;
-	static FunctionDefinition funcObj("StarMap::PushSectorColumn", typeid(void (StarMap::*)()), "554889e5415741564155415453504989fe498b86e8080000", nullptr, 0, 0, &func);
+	static FunctionDefinition funcObj("StarMap::PushSectorColumn", typeid(void (StarMap::*)()), "554889e5415741564155415453504989fe498b86e8080000|554889e54157415641554154534883ec504989fe498b86e8080000", nullptr, 0, 0, &func);
 }
 
 void StarMap::PushSectorColumn()
@@ -18608,7 +18600,7 @@ void TeleportSystem::constructor(int _systemId, int _roomId, int _shipId, int _s
 namespace _func1483
 {
     static void *func = 0;
-	static FunctionDefinition funcObj("TeleportSystem::OnLoop", typeid(void (TeleportSystem::*)()), "!.55", nullptr, 0, 0, &func);
+	static FunctionDefinition funcObj("TeleportSystem::OnLoop", typeid(void (TeleportSystem::*)()), "!.554889e5415653488", nullptr, 0, 0, &func);
 }
 
 void TeleportSystem::OnLoop()
@@ -18621,7 +18613,7 @@ void TeleportSystem::OnLoop()
 namespace _func1484
 {
     static void *func = 0;
-	static FunctionDefinition funcObj("TeleportSystem::GetArmed", typeid(int (TeleportSystem::*)()), "!.55", nullptr, 0, 0, &func);
+	static FunctionDefinition funcObj("TeleportSystem::GetArmed", typeid(int (TeleportSystem::*)()), "!.554889e58b876c02", nullptr, 0, 0, &func);
 }
 
 int TeleportSystem::GetArmed()
@@ -18634,7 +18626,7 @@ int TeleportSystem::GetArmed()
 namespace _func1485
 {
     static void *func = 0;
-	static FunctionDefinition funcObj("TeleportSystem::SetArmed", typeid(void (TeleportSystem::*)(int )), ".55", nullptr, 0, 0, &func);
+	static FunctionDefinition funcObj("TeleportSystem::SetArmed", typeid(void (TeleportSystem::*)(int )), "554889e54156534889fb4531f683fe027439|554889e553504889fb83fe027431", nullptr, 0, 0, &func);
 }
 
 void TeleportSystem::SetArmed(int val)
@@ -19998,7 +19990,6 @@ void WeaponAnimation::RenderChargeBar(float alpha)
 namespace _func1592
 {
     static void *func = 0;
-	// GOG | Steam - different instruction ordering after stack frame setup
 	static FunctionDefinition funcObj("WeaponBlueprint::GetDescription", typeid(std::string (WeaponBlueprint::*)(bool )), "554889e54157415641554154534881ec68010000488b05????????488b00488945d089|554889e54157415641554154534881ec680100008995", nullptr, 0, 0, &func);
 }
 
@@ -20959,8 +20950,7 @@ namespace _var1668
 namespace _func1669
 {
     static void *func = 0;
-	// GOG | Steam - xorps/test instruction order differs
-	static FunctionDefinition funcObj("font_height", typeid(float (*)(int , float )), "554889e553500f57c985ff7e74393d2d|554889e5535085ff0f57c97e74393d3d|554889e5535085ff0f57c97e74393d45", nullptr, 0, 0, &func);
+	static FunctionDefinition funcObj("font_height", typeid(float (*)(int , float )), ".554889e55350??????????7e74", nullptr, 0, 0, &func);
 }
 
 float __stdcall font_height(int font_id, float size)
@@ -20973,8 +20963,7 @@ float __stdcall font_height(int font_id, float size)
 namespace _func1670
 {
     static void *func = 0;
-	// GOG | Steam | FTL-12 - xorps/test instruction order differs, different immediates
-	static FunctionDefinition funcObj("font_baseline", typeid(float (*)(int , float )), "554889e553500f57c985ff7e74393d9d|554889e5535085ff0f57c97e74393dad|554889e5535085ff0f57c97e74393db5", nullptr, 0, 0, &func);
+	static FunctionDefinition funcObj("font_baseline", typeid(float (*)(int , float )), ".554889e55350??????????7e74", nullptr, 0, 0, &func);
 }
 
 float __stdcall font_baseline(int font_id, float size)

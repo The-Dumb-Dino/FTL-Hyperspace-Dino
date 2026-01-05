@@ -25,7 +25,7 @@ cleanup __amd64 void CachedImage::SetPartial(CachedImage *this, float x_start, f
 cleanup __amd64 void CachedImage::SetRotation(CachedImage *this, float rotation);
 ".554889e541565341":
 cleanup __amd64 void CachedImage::SetMirrored(CachedImage *this, bool mirrored);
-"!.554889e553504889fb":
+"554889e553504889fb488d05????????488903f64310017409488b7b20e8????????4889df4883c4":
 cleanup __amd64 void CachedImage::destructor(CachedImage *this);
 
 
