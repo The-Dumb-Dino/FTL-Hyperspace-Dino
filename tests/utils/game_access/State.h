@@ -2,6 +2,7 @@
 #include "../framework/Core.h"
 
 struct GenericButton;
+struct CompleteShip;
 
 /**
  * GameAccess::State
@@ -47,5 +48,14 @@ namespace GameAccess
 
         // UI interaction
         static void clickButton(GenericButton* button);
+
+        // Combat helpers
+        static CompleteShip* getEnemyShip();
+        static bool spawnEnemyShip(const std::string& blueprintName);
+        static bool hasEnemyShip();
+        static bool addSuperShieldToEnemy(int shieldAmount);
+        static bool setEnemyShieldBubbles(int bubbles);
+        static bool addEnergyShieldToEnemy(int points = 5);
+        static void clearEnemyShip();
     };
 }

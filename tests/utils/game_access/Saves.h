@@ -7,6 +7,8 @@
  * Save file management for tests.
  * Provides utilities to create, load, and manage test save files
  * for repeatable testing scenarios.
+ *
+ * Note: Uses boost::filesystem internally for cross-platform path handling.
  */
 
 namespace GameAccess
@@ -22,5 +24,7 @@ namespace GameAccess
 
         // Get the full path to save files
         static std::string getTestSavePath();
+
+        static bool createNewSave(const std::string& saveName);
     };
 }

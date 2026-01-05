@@ -35,12 +35,15 @@ static void setupSavedGame(TestFramework::Test* test, TestFramework::TestStages*
     stages->addStage("Click continue", [test]() {
         MainMenu* menu = &G_->GetCApp()->menu;
         test->requireNotNull(menu, "Main menu is available");
-        test->requireTrue(menu->continueButton.bActive, "Continue button is active");
+        if (!menu->continueButton.bActive){
+            test->skip("Save not available for this modpack.");
+            return;
+        }
 
         // Click a button using a safe utility
         GameAccess::State::clickButton(&menu->continueButton);
         test->log("Continue button clicked");
-    }, 100);
+    }, 30);
 
     // Stage 3: Verify game started
     stages->addStage("Verify game started", [test]() {

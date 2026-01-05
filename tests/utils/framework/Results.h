@@ -18,6 +18,7 @@ namespace TestFramework
     {
         std::string name;
         bool passed;
+        bool skipped = false;
         int duration_ms;
         int assertions_passed;
         int assertions_failed;
@@ -39,15 +40,18 @@ namespace TestFramework
         void writeResults();
 
         // Query methods (cached)
-        bool allPassed() const { return passedCount == static_cast<int>(results.size()); }
+        bool allPassed() const { return failedCount == 0; }
         int getTotalTests() const { return static_cast<int>(results.size()); }
         int getPassedTests() const { return passedCount; }
-        int getFailedTests() const { return getTotalTests() - passedCount; }
+        int getSkippedTests() const { return skippedCount; }
+        int getFailedTests() const { return failedCount; }
 
     private:
         ResultsAggregator() = default;
 
         std::vector<TestResult> results;
-        int passedCount = 0;  // Cached to avoid O(n) loops
+        int passedCount = 0;
+        int skippedCount = 0;
+        int failedCount = 0;
     };
 }

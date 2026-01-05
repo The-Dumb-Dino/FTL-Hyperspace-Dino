@@ -32,4 +32,18 @@ namespace TestFramework
     private:
         std::string message;
     };
+
+    /**
+     * Exception thrown when a test is skipped.
+     * This causes immediate test termination without counting as failure.
+     */
+    class TestSkippedException : public std::exception
+    {
+    public:
+        explicit TestSkippedException(const std::string& msg) : message(msg) {}
+        const char* what() const noexcept override { return message.c_str(); }
+
+    private:
+        std::string message;
+    };
 }

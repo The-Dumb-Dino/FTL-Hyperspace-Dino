@@ -59,6 +59,12 @@ namespace TestFramework
         recordAssertion(false, testName, reason);
     }
 
+    void Test::skip(const std::string& reason)
+    {
+        logger.log("[SKIP] " + reason);
+        throw TestSkippedException(reason);
+    }
+
     // ============================================
     // Soft Assertions (Continue on Failure)
     // ============================================

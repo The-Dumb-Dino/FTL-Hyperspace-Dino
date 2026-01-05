@@ -1,5 +1,6 @@
 #include "State.h"
 #include "../../../Global.h"
+#include "../../../CustomAugments.h"
 
 namespace GameAccess
 {
@@ -161,5 +162,140 @@ namespace GameAccess
         MainMenu* menu = &G_->GetCApp()->menu;
         menu->MouseMove(clickX, clickY);
         menu->MouseClick(clickX, clickY);
+    }
+
+    // ============================================
+    // Combat Helpers
+    // ============================================
+
+    CompleteShip* State::getEnemyShip()
+    {
+        CommandGui* gui = getCommandGui();
+        if (!gui) return nullptr;
+        return gui->combatControl.currentTarget;
+    }
+
+    bool State::hasEnemyShip()
+    {
+        return getEnemyShip() != nullptr;
+    }
+
+    bool State::spawnEnemyShip(const std::string& blueprintName)
+    {
+        WorldManager* world = getWorld();
+        if (!world) return false;
+
+        // Create a ship event for the enemy
+        ShipEvent shipEvent;
+        shipEvent.present = true;
+        shipEvent.name = blueprintName;
+        shipEvent.blueprint = blueprintName;
+        shipEvent.hostile = true;
+        shipEvent.shipSeed = rand();
+
+        // Create the enemy ship
+        CompleteShip* enemy = world->CreateShip(&shipEvent, false);
+        if (!enemy) return false;
+
+        // Add to combat
+        CommandGui* gui = getCommandGui();
+        if (gui)
+        {
+            gui->AddEnemyShip(enemy);
+        }
+
+        return true;
+    }
+
+    bool State::addSuperShieldToEnemy(int shieldAmount)
+    {
+        CompleteShip* enemy = getEnemyShip();
+        if (!enemy || !enemy->shipManager) return false;
+
+        Shields* shields = enemy->shipManager->shieldSystem;
+        if (!shields) return false;
+
+        // Set super shield amount (max and current)
+        shields->shields.power.super.second = shieldAmount;
+        shields->shields.power.super.first = shieldAmount;
+
+        // Add the super shield visual at ship center
+        Point center;
+        center.x = enemy->shipManager->ship.shipImage.x;
+        center.y = enemy->shipManager->ship.shipImage.y;
+        shields->AddSuperShield(center);
+
+        return true;
+    }
+
+    bool State::setEnemyShieldBubbles(int bubbles)
+    {
+        CompleteShip* enemy = getEnemyShip();
+        if (!enemy || !enemy->shipManager) return false;
+
+        Shields* shields = enemy->shipManager->shieldSystem;
+        if (!shields) return false;
+
+        // Upgrade the shield system power capacity (2 power per bubble)
+        int powerNeeded = bubbles * 2;
+        shields->powerState.first = powerNeeded;
+        shields->powerState.second = powerNeeded;
+
+        // Set regular shield bubbles (first = current, second = max)
+        shields->shields.power.first = bubbles;
+        shields->shields.power.second = bubbles;
+
+        return true;
+    }
+
+    bool State::addEnergyShieldToEnemy(int points)
+    {
+        CompleteShip* enemy = getEnemyShip();
+        if (!enemy || !enemy->shipManager) return false;
+
+        Shields* shields = enemy->shipManager->shieldSystem;
+        if (!shields) return false;
+
+        // Create a custom augment definition with super shield
+        CustomAugmentManager* customAug = CustomAugmentManager::GetInstance();
+
+        static AugmentDefinition* testAugDef = nullptr;
+        if (!testAugDef)
+        {
+            testAugDef = new AugmentDefinition();
+            testAugDef->name = "TEST_SUPER_SHIELD";
+            testAugDef->superShield.present = true;
+            testAugDef->superShield.value = points;
+            testAugDef->superShield.customRender = true;
+            testAugDef->superShield.shieldColor = GL_Color(0.5f, 0.0f, 1.0f, 1.0f);  // Purple
+            customAug->AddAugmentDefinition("TEST_SUPER_SHIELD", testAugDef);
+        }
+        testAugDef->superShield.value = points;
+
+        // Add the augment to enemy ship and sync the cached list
+        G_->GetShipInfo(true)->augList["TEST_SUPER_SHIELD"] = 1;
+        customAug->UpdateAugments(1);  // Sync to cached augListWithHidden
+
+        // Set super shield directly (super.first = current, super.second = max)
+        shields->shields.power.super.second = points;
+        shields->shields.power.super.first = points;
+
+        return true;
+    }
+
+    void State::clearEnemyShip()
+    {
+        CommandGui* gui = getCommandGui();
+        if (gui)
+        {
+            gui->combatControl.Clear();
+        }
+
+        // Also clear the enemy ship reference from player ship
+        WorldManager* world = getWorld();
+        if (world && world->playerShip)
+        {
+            world->playerShip->enemyShip = nullptr;
+        }
     }
 }

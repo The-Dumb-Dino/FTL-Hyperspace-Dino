@@ -16,7 +16,7 @@ static void setupMainMenu(TestFramework::Test* test, TestFramework::TestStages* 
     stages->addStage("Verify main menu state", [test]() {
         test->requireTrue(GameAccess::State::isInMenu(), "At main menu");
         test->log("Main menu scenario ready");
-    }, 0);
+    }, 30);
 }
 
 // Auto-register this scenario

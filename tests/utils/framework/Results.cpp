@@ -14,9 +14,17 @@ namespace TestFramework
     void ResultsAggregator::addTestResult(const TestResult& result)
     {
         results.push_back(result);
-        if (result.passed)
+        if (result.skipped)
+        {
+            skippedCount++;
+        }
+        else if (result.passed)
         {
             passedCount++;
+        }
+        else
+        {
+            failedCount++;
         }
     }
 
@@ -49,6 +57,7 @@ namespace TestFramework
         // Write summary
         resultsFile << "Total Tests:        " << getTotalTests() << "\n";
         resultsFile << "Passed:             " << getPassedTests() << "\n";
+        resultsFile << "Skipped:            " << getSkippedTests() << "\n";
         resultsFile << "Failed:             " << getFailedTests() << "\n";
         resultsFile << "All Passed:         " << (allPassed() ? "Yes" : "No") << "\n";
         resultsFile << "Duration:           " << (totalDuration / 1000.0) << "s\n";
@@ -72,11 +81,15 @@ namespace TestFramework
         resultsFile << "Test Details:\n";
         for (const auto& r : results)
         {
-            resultsFile << "  " << r.name << ": "
-                       << (r.passed ? "PASSED" : "FAILED")
-                       << " (" << r.duration_ms << "ms | "
-                       << r.assertions_passed << " assertions passed, "
-                       << r.assertions_failed << " failed)\n";
+            const char* status = r.skipped ? "SKIPPED" : (r.passed ? "PASSED" : "FAILED");
+            resultsFile << "  " << r.name << ": " << status;
+            if (!r.skipped)
+            {
+                resultsFile << " (" << r.duration_ms << "ms | "
+                           << r.assertions_passed << " assertions passed, "
+                           << r.assertions_failed << " failed)";
+            }
+            resultsFile << "\n";
         }
 
         resultsFile.close();
