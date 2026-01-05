@@ -57,6 +57,9 @@ namespace TestFramework
             COMPLETE
         };
 
+        // Cleanup after test completion/failure/skip
+        void cleanupCurrentTest();
+
         std::vector<TestInfo> tests;
         State state;
         size_t currentTestIndex;

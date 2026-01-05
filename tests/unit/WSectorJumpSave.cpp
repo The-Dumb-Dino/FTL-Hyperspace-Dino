@@ -14,6 +14,7 @@ static void SectorJumpSaveTest(TestFramework::Test& test, TestFramework::TestSta
 
     // Verify starting state
     stages.addStage("Verify starting state", [&test]() {
+        
         test.assertTrue(GameAccess::State::getPlayerHull() > 0, "Player has positive hull");
         test.assertTrue(GameAccess::State::getPlayerScrap() >= 0, "Player has valid scrap count");
     }, 0);
@@ -57,8 +58,12 @@ static void SectorJumpSaveTest(TestFramework::Test& test, TestFramework::TestSta
         test.assertTrue(GameAccess::State::isInGame(), "Still in game after jump");
         test.log("New world level: " + std::to_string(starMap->worldLevel));
     }, 100);
+
 }
 
 // Auto-register
+// Crash save might be corrupted which causes crashes after loading a new game.
+// Uses WW in name to run last and not cause issues for other tests. Remove in future.
+// Disabled because of save corruption issues.
 //static TestFramework::TestRegistrar _sectorJumpTest("SectorJump", SectorJumpSaveTest, "SavedGame",
 //    TestFramework::ScenarioParams().setString("saveName", "mv-sector-jump"));

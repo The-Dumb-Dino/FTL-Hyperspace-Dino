@@ -27,7 +27,7 @@ cleanup __amd64 ImageDesc SpaceManager::SwitchBackground(SpaceManager *this, con
 cleanup __amd64 void SpaceManager::StartAsteroids(SpaceManager *this, int shieldCount, bool defense);
 "!.55":
 cleanup __amd64 void SpaceManager::SetStorm(SpaceManager *this, bool state);
-".55":
+"554889e54157415641554154534881eca80000004989fe4188b629040000":
 cleanup __amd64 void SpaceManager::SetNebula(SpaceManager *this, bool state);
 "!.5548":
 cleanup __amd64 bool SpaceManager::DangerousEnvironment(SpaceManager *this);

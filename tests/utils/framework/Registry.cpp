@@ -18,10 +18,24 @@ namespace TestFramework
         result.assertions_failed = tracker.getFailCount();
         ResultsAggregator::getInstance().addTestResult(result);
 
-        // Also log summary to game log
         hs_log_file("\n[%s] Tests: %d passed, %d failed (%.2fs)\n",
             testName.c_str(), tracker.getPassCount(), tracker.getFailCount(), tracker.getDuration() / 1000.0f);
     }
+
+    static void reportTestSkipped(const std::string& testName, const std::string& reason)
+    {
+        TestResult result;
+        result.name = testName;
+        result.passed = true;
+        result.skipped = true;
+        result.duration_ms = 0;
+        result.assertions_passed = 0;
+        result.assertions_failed = 0;
+        ResultsAggregator::getInstance().addTestResult(result);
+
+        hs_log_file("\n[%s] SKIPPED: %s\n", testName.c_str(), reason.c_str());
+    }
+
     Registry::Registry()
         : state(State::IDLE), currentTestIndex(0), currentTest(nullptr),
           currentStages(nullptr), waitCounter(0)
@@ -53,6 +67,17 @@ namespace TestFramework
         waitCounter = 0;
     }
 
+    void Registry::cleanupCurrentTest()
+    {
+        delete currentStages;
+        delete currentTest;
+        currentStages = nullptr;
+        currentTest = nullptr;
+        currentTestIndex++;
+        state = State::WAITING_BETWEEN_TESTS;
+        waitCounter = 60;
+    }
+
     void Registry::tick()
     {
         if (state == State::IDLE || state == State::COMPLETE) return;
@@ -63,15 +88,15 @@ namespace TestFramework
             {
                 if (currentTestIndex >= tests.size())
                 {
-                    // All tests complete
                     ResultsAggregator::getInstance().writeResults();
 
                     auto& aggregator = ResultsAggregator::getInstance();
                     hs_log_file("\n========================================\n");
                     hs_log_file("  TEST SUITE COMPLETE\n");
-                    hs_log_file(("  Total:  " + std::to_string(aggregator.getTotalTests()) + "\n").c_str());
-                    hs_log_file(("  Passed: " + std::to_string(aggregator.getPassedTests()) + "\n").c_str());
-                    hs_log_file(("  Failed: " + std::to_string(aggregator.getFailedTests()) + "\n").c_str());
+                    hs_log_file(("  Total:   " + std::to_string(aggregator.getTotalTests()) + "\n").c_str());
+                    hs_log_file(("  Passed:  " + std::to_string(aggregator.getPassedTests()) + "\n").c_str());
+                    hs_log_file(("  Skipped: " + std::to_string(aggregator.getSkippedTests()) + "\n").c_str());
+                    hs_log_file(("  Failed:  " + std::to_string(aggregator.getFailedTests()) + "\n").c_str());
                     hs_log_file("========================================\n");
 
                     state = State::COMPLETE;
@@ -79,54 +104,38 @@ namespace TestFramework
                 }
 
                 const auto& testInfo = tests[currentTestIndex];
-
-                // Create test and stages
                 currentTest = new Test(testInfo.name);
                 currentStages = new TestStages(currentTest);
 
                 try
                 {
-                    // Setup scenario first
                     ScenarioRegistry::getInstance().setupScenario(
-                        testInfo.scenarioName,
-                        currentTest,
-                        currentStages,
-                        testInfo.scenarioParams
-                    );
-
-                    // Call test function to set up test-specific stages
+                        testInfo.scenarioName, currentTest, currentStages, testInfo.scenarioParams);
                     testInfo.func(*currentTest, *currentStages);
                     state = State::RUNNING_STAGES;
+                }
+                catch (const TestSkippedException& e)
+                {
+                    reportTestSkipped(testInfo.name, e.what());
+                    cleanupCurrentTest();
                 }
                 catch (const TestFailedException& e)
                 {
                     currentTest->log("Test failed during setup: " + std::string(e.what()));
                     reportTestResults(testInfo.name, *currentTest);
-                    delete currentStages;
-                    delete currentTest;
-                    currentTestIndex++;
-                    state = State::WAITING_BETWEEN_TESTS;
-                    waitCounter = 60; // Wait 1 second before next test
+                    cleanupCurrentTest();
                 }
                 catch (const std::exception& e)
                 {
                     currentTest->fail("Test exception during setup", e.what());
                     reportTestResults(testInfo.name, *currentTest);
-                    delete currentStages;
-                    delete currentTest;
-                    currentTestIndex++;
-                    state = State::WAITING_BETWEEN_TESTS;
-                    waitCounter = 60;
+                    cleanupCurrentTest();
                 }
                 catch (...)
                 {
-                    currentTest->fail("Unknown exception during setup", "Test threw non-standard exception");
+                    currentTest->fail("Unknown exception during setup", "Non-standard exception");
                     reportTestResults(testInfo.name, *currentTest);
-                    delete currentStages;
-                    delete currentTest;
-                    currentTestIndex++;
-                    state = State::WAITING_BETWEEN_TESTS;
-                    waitCounter = 60;
+                    cleanupCurrentTest();
                 }
                 break;
             }
@@ -136,22 +145,21 @@ namespace TestFramework
                 const auto& testInfo = tests[currentTestIndex];
                 try
                 {
-                    bool complete = currentStages->tick();
-                    if (complete)
+                    if (currentStages->tick())
                     {
-                        // Test stages complete - report results
                         reportTestResults(testInfo.name, *currentTest);
                         delete currentStages;
                         delete currentTest;
+                        currentStages = nullptr;
+                        currentTest = nullptr;
                         currentTestIndex++;
 
-                        // Return to main menu between tests for isolation
                         if (currentTestIndex < tests.size())
                         {
                             hs_log_file("\n[TEST ISOLATION] Returning to main menu...\n");
                             GameAccess::State::returnToMainMenu();
                             state = State::WAITING_BETWEEN_TESTS;
-                            waitCounter = 60; // Wait 1 second before next test
+                            waitCounter = 60;
                         }
                         else
                         {
@@ -159,35 +167,28 @@ namespace TestFramework
                         }
                     }
                 }
+                catch (const TestSkippedException& e)
+                {
+                    reportTestSkipped(testInfo.name, e.what());
+                    cleanupCurrentTest();
+                }
                 catch (const TestFailedException& e)
                 {
                     currentTest->log("Test failed: " + std::string(e.what()));
                     reportTestResults(testInfo.name, *currentTest);
-                    delete currentStages;
-                    delete currentTest;
-                    currentTestIndex++;
-                    state = State::WAITING_BETWEEN_TESTS;
-                    waitCounter = 60;
+                    cleanupCurrentTest();
                 }
                 catch (const std::exception& e)
                 {
                     currentTest->fail("Test exception", e.what());
                     reportTestResults(testInfo.name, *currentTest);
-                    delete currentStages;
-                    delete currentTest;
-                    currentTestIndex++;
-                    state = State::WAITING_BETWEEN_TESTS;
-                    waitCounter = 60;
+                    cleanupCurrentTest();
                 }
                 catch (...)
                 {
-                    currentTest->fail("Unknown exception", "Test threw non-standard exception");
+                    currentTest->fail("Unknown exception", "Non-standard exception");
                     reportTestResults(testInfo.name, *currentTest);
-                    delete currentStages;
-                    delete currentTest;
-                    currentTestIndex++;
-                    state = State::WAITING_BETWEEN_TESTS;
-                    waitCounter = 60;
+                    cleanupCurrentTest();
                 }
                 break;
             }
@@ -196,9 +197,9 @@ namespace TestFramework
             {
                 if (waitCounter > 0)
                 {
-                    if (waitCounter % 60*2 == 0) // Log every 2 seconds
+                    if (waitCounter % 120 == 0)
                     {
-                        hs_log_file(("[TEST ISOLATION] Waiting... " + std::to_string(waitCounter / 60) + " seconds remaining\n").c_str());
+                        hs_log_file(("[TEST ISOLATION] Waiting... " + std::to_string(waitCounter / 60) + "s remaining\n").c_str());
                     }
                     waitCounter--;
                 }

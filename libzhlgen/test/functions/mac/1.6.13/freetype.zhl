@@ -24,9 +24,11 @@ static cleanup __amd64 void freetype::easy_printAutoShrink(int fontId, float x, 
 "!.488b55d0488908488950088b4dd8894810488d1d(???????\?)":
 offsetVariable float* Global_freetype_sil_freetype_outline;
 
-".554889e5535085ff":
+// All platforms - wildcard middle bytes, relative scan
+".554889e55350??????????7e74":
 cleanup __amd64 float font_height(int font_id, float size);
-".554889e5535085ff":
+// All platforms - wildcard middle bytes, relative scan (chains from font_height)
+".554889e55350??????????7e74":
 cleanup __amd64 float font_baseline(int font_id, float size);
 
 

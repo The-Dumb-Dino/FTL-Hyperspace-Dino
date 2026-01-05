@@ -51,6 +51,10 @@ namespace TestFramework
                 test->log(errorLog);
                 throw; // Re-throw to be caught by Registry
             }
+            catch (const TestSkippedException&)
+            {
+                throw; // Re-throw to be caught by Registry
+            }
             catch (const std::exception& e)
             {
                 test->fail("Stage exception", e.what());

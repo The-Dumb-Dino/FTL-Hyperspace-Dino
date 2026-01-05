@@ -27,9 +27,10 @@ namespace TestFramework
         void log(const std::string& message);
         void section(const std::string& sectionName);
 
-        // Pass/fail (optional - implicit pass if no failures)
+        // Pass/fail/skip (optional - implicit pass if no failures)
         void pass(const std::string& message);
         void fail(const std::string& testName, const std::string& reason);
+        void skip(const std::string& reason);
 
         // Soft assertions - log but continue execution
         bool assertTrue(bool condition, const std::string& message);

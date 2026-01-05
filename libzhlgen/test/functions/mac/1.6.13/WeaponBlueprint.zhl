@@ -1,5 +1,6 @@
 // Continue from WeaponAnimation::RenderChargeBar (hyper efficiency™)
-"!.554889e54157415641554154534881ec????????8995????????4889f3":
+// GOG | Steam - different instruction ordering after stack frame setup
+"554889e54157415641554154534881ec68010000488b05????????488b00488945d089|554889e54157415641554154534881ec680100008995":
 cleanup __amd64 std::string WeaponBlueprint::GetDescription(WeaponBlueprint *this, bool tooltip);
 ".554889e54156534881ec70":
 cleanup __amd64 Point WeaponBlueprint::GetDimensions(WeaponBlueprint *this);

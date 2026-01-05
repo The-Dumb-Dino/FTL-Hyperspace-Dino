@@ -8412,6 +8412,16 @@ struct StateInfo
 
 struct Store : FocusWindow
 {
+	Store()
+	{
+		this->constructor();
+	}
+
+	~Store()
+	{
+		this->destructor();
+	}
+
 	LIBZHL_API void Clear();
 	LIBZHL_API void Close();
 	LIBZHL_API void CreateStoreBoxes(int type, Equipment *equip);

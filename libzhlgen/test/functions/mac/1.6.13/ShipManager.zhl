@@ -30,7 +30,7 @@ cleanup __amd64 bool ShipManager::CanFitSubsystem(ShipManager *this, int systemI
 cleanup __amd64 void ShipManager::AddInitialCrew(ShipManager *this, std::vector<CrewBlueprint>& blueprints);
 "!.5548":
 cleanup __amd64 int ShipManager::GetSystemRoom(ShipManager *this, int sysId);
-".55":
+"554889e54157415641554154534881eca800000044894dd0448945c8894dcc4189d64889f34989ff":
 cleanup __amd64 CrewMember* ShipManager::AddCrewMemberFromBlueprint(ShipManager *this, CrewBlueprint* bp, int slot, bool init, int roomId, bool intruder);
 ".5548":
 cleanup __amd64 int ShipManager::OnInit(ShipManager *this, ShipBlueprint* bp, int shipLevel);
@@ -52,7 +52,7 @@ cleanup __amd64 std::vector<CrewMember*> ShipManager::GetLeavingCrew(ShipManager
 cleanup __amd64 std::vector<CrewMember*> ShipManager::TeleportCrew(ShipManager *this, int roomId, bool intruders);
 ".554889e5415741564155":
 cleanup __amd64 CrewMember* ShipManager::GetCrewmember(ShipManager *this, int slot, bool present);
-"!.5548":
+"554889e54156534989fe498b86c0000000":
 cleanup __amd64 void ShipManager::RemoveCrewmember(ShipManager *this, CrewMember* crew);
 ".554889e541574156415541545348":
 cleanup __amd64 CrewMember* ShipManager::AddCrewMemberFromString(ShipManager *this, const std::string& name, const std::string& race, bool intruder, int roomId, bool init, bool male);

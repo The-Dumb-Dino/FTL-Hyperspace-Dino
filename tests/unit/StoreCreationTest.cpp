@@ -14,22 +14,7 @@ static void RunStoreCreationTest(TestFramework::Test& test, TestFramework::TestS
 {
     test.section("Store Creation Test");
 
-    // Close initial dialogue by pressing button 1
-    stages.addStage("Close initial dialogue", [&test]() {
-        CommandGui* gui = GameAccess::State::getCommandGui();
-        test.requireNotNull(gui, "CommandGui is accessible");
 
-        if (gui->choiceBox.bOpen && !gui->choiceBox.choiceBoxes.empty())
-        {
-            // Try pressing key "1" to select first choice
-            gui->choiceBox.KeyDown(SDLKey::SDLK_1);
-            test.pass("Pressed key 1 for dialogue choice");
-        }
-        else
-        {
-            test.pass("No dialogue to close");
-        }
-    }, 10); // Wait 1 second for dialogue to close
 
     // Verify dialogue closed
     stages.addStage("Verify dialogue closed", [&test]() {
@@ -58,6 +43,16 @@ static void RunStoreCreationTest(TestFramework::Test& test, TestFramework::TestS
             test.fail("Screenshot", "Failed to capture screenshot");
         }
     }, 0);
+
+    // close store
+    stages.addStage("Close store", [&test]() {
+        CommandGui* gui = GameAccess::State::getCommandGui();
+        test.requireNotNull(gui, "CommandGui is accessible");
+
+        // Close the store screens (TabbedWindow containing the store)
+        gui->storeScreens.Close();
+        test.pass("Store closed via CommandGui");
+    }, 10); // Wait 0.5 seconds
 }
 
 // Auto-register
