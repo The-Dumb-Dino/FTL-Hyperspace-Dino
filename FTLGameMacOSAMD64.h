@@ -8417,10 +8417,6 @@ struct Store : FocusWindow
 		this->constructor();
 	}
 
-	~Store()
-	{
-		this->destructor();
-	}
 
 	LIBZHL_API void Clear();
 	LIBZHL_API void Close();
