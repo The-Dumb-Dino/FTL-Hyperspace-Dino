@@ -73,9 +73,6 @@
 #elif defined(__amd64__)
 #define MOLOGIE_DETOURS_DETOUR_SIZE 5
 #endif // __arch__
-#if defined(__APPLE__)
-#  define MOLOGIE_DETOURS_MEMORY_SIMPLE_PROTECT(ADDRESS, SIZE, NEWPROT) (mprotect((void*)(ADDRESS), (SIZE), (NEWPROT)) == 0)
-#endif
 
 /**
  * @namespace	MologieDetours
@@ -440,7 +437,6 @@ namespace MologieDetours
 			{
 				throw DetourPageProtectionException("Failed to make copy of original code executable", backupOriginalCode_);
 			}
-			#endif
 			#endif
 
 			// Create a new trampoline which points at the detour
