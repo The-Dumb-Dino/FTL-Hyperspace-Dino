@@ -20,6 +20,7 @@ rm -rf build-package-windows
 mkdir -p build-package-windows
 
 # Copy Release Files structure
+mkdir -p build-package-windows/Index
 cp -r "Release Files/Windows/"* build-package-windows/Index/
 mv "build-package-windows/Index/README.txt" build-package-windows/
 
