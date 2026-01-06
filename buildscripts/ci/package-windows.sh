@@ -20,8 +20,8 @@ rm -rf build-package-windows
 mkdir -p build-package-windows
 
 # Copy Release Files structure
-cp -r "Release Files/Windows - Extract these files into where FTLGame.exe is" build-package-windows/
-cp "Release Files/README.txt" build-package-windows/
+cp -r "Release Files/Windows/"* build-package-windows/Index/
+mv "build-package-windows/Index/README.txt" build-package-windows/
 
 # Package Hyperspace.ftl from Mod Files
 cd "Mod Files"
@@ -30,7 +30,10 @@ cd ..
 mv "Mod Files/Hyperspace.ftl" build-package-windows/
 
 # Copy built binaries
-cp build-*/Hyperspace.dll "build-package-windows/Windows - Extract these files into where FTLGame.exe is/"
+cp build-*/Hyperspace.dll "build-package-windows/Index/"
+
+# Rename index to Windows - Extract these files into where FTLGame.exe is
+mv "build-package-windows/Index" "build-package-windows/Windows - Extract these files into where FTLGame.exe is"
 
 # Create final zip
 cd build-package-windows
