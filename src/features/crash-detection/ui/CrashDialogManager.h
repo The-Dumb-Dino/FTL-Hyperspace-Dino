@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include "Global.h"
 
 /**
  * CrashDialogManager - Manages all crash reporting dialogs
@@ -16,8 +17,13 @@ public:
     static CrashDialogManager* GetInstance();
     ~CrashDialogManager();
 
-    // Dialog 1: "Do you want to report this crash?"
-    void ShowAskReportDialog();
+    // Bug report button
+    void InitButton();
+    void UpdateButtonHover(int x, int y);  // Updates hover state and shows tooltip
+    bool IsBugButtonClicked() const;       // Returns true if button should trigger action
+
+    // Dialog 1: "Do you want to report this crash?" (isManualReport = from button, not crash)
+    void ShowAskReportDialog(bool isManualReport);
 
     // Dialog 2: "Report to Discord or GitHub?"
     void ShowChooseDestinationDialog();
@@ -53,4 +59,8 @@ private:
     class ConfirmWindow* chooseDestinationDialog = nullptr;
     class ConfirmWindow* instructionsDialog = nullptr;
     class ConfirmWindow* errorDialog = nullptr;
+
+    // Bug report button
+    class TextButton* bugReportButton = nullptr;
+    TextString bugReportLabel;
 };

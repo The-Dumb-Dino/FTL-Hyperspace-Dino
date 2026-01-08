@@ -24,7 +24,33 @@ CrashDialogManager* CrashDialogManager::GetInstance()
     return instance;
 }
 
-void CrashDialogManager::ShowAskReportDialog()
+void CrashDialogManager::InitButton()
+{
+    bugReportLabel.data = "BUG";
+    bugReportLabel.isLiteral = true;
+    bugReportButton = new TextButton();
+    bugReportButton->OnInit(Point(1208, 632), Point(50, 24), 4, &bugReportLabel, 62);
+    bugReportButton->bActive = true;   
+}
+
+void CrashDialogManager::UpdateButtonHover(int x, int y)
+{
+    if (bugReportButton)
+    {
+        bugReportButton->MouseMove(x, y, false);
+        if (bugReportButton->bActive && bugReportButton->bHover)
+        {
+            G_->GetMouseControl()->SetTooltip("Click to report a bug");
+        }
+    }
+}
+
+bool CrashDialogManager::IsBugButtonClicked() const
+{
+    return bugReportButton && bugReportButton->bActive && bugReportButton->bHover;
+}
+
+void CrashDialogManager::ShowAskReportDialog(bool isManualReport)
 {
     if (askReportDialog == nullptr)
     {
@@ -33,7 +59,14 @@ void CrashDialogManager::ShowAskReportDialog()
 
     TextString text;
     text.isLiteral = true;
-    text.data = "A Hyperspace mod crash was detected on the previous game session.\n\nDo you want to create a bug report with your saves and logs?";
+    if (isManualReport)
+    {
+        text.data = "Do you want to create a bug report with your saves and logs?";
+    }
+    else
+    {
+        text.data = "A Hyperspace mod crash was detected on the previous game session.\n\nDo you want to create a bug report with your saves and logs?";
+    }
 
     TextString yes;
     yes.isLiteral = true;
@@ -126,6 +159,13 @@ void CrashDialogManager::ShowErrorDialog()
 
 void CrashDialogManager::OnRender()
 {
+    // Render bug report button
+    if (bugReportButton)
+    {
+        bugReportButton->OnRender();
+    }
+
+    // Render dialogs
     if (askReportDialog != nullptr && askReportDialog->bOpen)
     {
         askReportDialog->OnRender();

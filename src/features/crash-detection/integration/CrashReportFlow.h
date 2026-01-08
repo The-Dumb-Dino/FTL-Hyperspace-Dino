@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include "Global.h"
 
 /**
  * CrashReportFlow - ORCHESTRATION LAYER
@@ -27,10 +28,16 @@ public:
     // Called when main menu opens - checks for crashes and shows first dialog
     void OnMenuOpen();
 
-    // Render all dialogs
+    // Manually start the bug report flow (for button trigger)
+    void StartManualReport();
+
+    // Initialize bug report button (delegates to CrashDialogManager)
+    void InitButton();
+
+    // Render all dialogs and button
     void OnRender();
 
-    // Handle mouse input for dialogs
+    // Handle mouse input for dialogs and button
     void OnMouseClick(int x, int y, bool& shouldPropagate);
     void OnMouseMove(int x, int y, bool& shouldPropagate);
 

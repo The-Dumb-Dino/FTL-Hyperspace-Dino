@@ -29,7 +29,13 @@ CrashReportFlow* CrashReportFlow::GetInstance()
     return instance;
 }
 
-// Render all crash reporting dialogs
+// Initialize bug report button (delegates to CrashDialogManager)
+void CrashReportFlow::InitButton()
+{
+    CrashDialogManager::GetInstance()->InitButton();
+}
+
+// Render all crash reporting dialogs and button
 void CrashReportFlow::OnRender()
 {
     CrashDialogManager::GetInstance()->OnRender();
@@ -55,11 +61,17 @@ void CrashReportFlow::OnMenuOpen()
     // If crash detected, show Dialog 1: "Do you want to report this crash?"
     if (CrashDetector::GetInstance()->WasCrashDetected())
     {
-        CrashDialogManager::GetInstance()->ShowAskReportDialog();
+        CrashDialogManager::GetInstance()->ShowAskReportDialog(false);
     }
 }
 
-// Handle dialog mouse click events
+// Manually start the bug report flow (for button trigger)
+void CrashReportFlow::StartManualReport()
+{
+    CrashDialogManager::GetInstance()->ShowAskReportDialog(true);
+}
+
+// Handle dialog and button mouse click events
 void CrashReportFlow::OnMouseClick(int x, int y, bool& shouldPropagate)
 {
     // Dialog 1: "Do you want to report this crash?"
@@ -105,18 +117,28 @@ void CrashReportFlow::OnMouseClick(int x, int y, bool& shouldPropagate)
         return;
     }
 
+    // Handle bug report button click
+    if (CrashDialogManager::GetInstance()->IsBugButtonClicked())
+    {
+        StartManualReport();
+    }
+
     shouldPropagate = true;
 }
 
 
-// Handle dialog mouse move events
+// Handle dialog and button mouse move events
 void CrashReportFlow::OnMouseMove(int x, int y, bool& shouldPropagate)
 {
+    // Handle dialogs
     if (CrashDialogManager::GetInstance()->AnyCrashDialogOpen())
     {
         CrashDialogManager::GetInstance()->OnMouseMove(x, y, shouldPropagate);
         return;
     }
+
+    // Handle bug report button
+    CrashDialogManager::GetInstance()->UpdateButtonHover(x, y);
 
     shouldPropagate = true;
 }
