@@ -13,6 +13,7 @@ CrashDialogManager::~CrashDialogManager()
     delete chooseDestinationDialog;
     delete instructionsDialog;
     delete errorDialog;
+    delete bugReportButton;
 }
 
 CrashDialogManager* CrashDialogManager::GetInstance()
@@ -25,12 +26,31 @@ CrashDialogManager* CrashDialogManager::GetInstance()
 }
 
 void CrashDialogManager::InitButton()
-{
-    bugReportLabel.data = "BUG";
-    bugReportLabel.isLiteral = true;
-    bugReportButton = new TextButton();
-    bugReportButton->OnInit(Point(1208, 632), Point(50, 24), 4, &bugReportLabel, 62);
-    bugReportButton->bActive = true;   
+{   
+
+    Point buttonPos(1239, 664);
+    // Check if the image button resource exists
+    if (G_->GetResources()->ImageExists("BugReport/bug_on.png"))
+    {
+        useImageButton = true;
+        Button* imageButton = new Button();
+        imageButton->OnInit("BugReport/bug", buttonPos);
+        imageButton->bActive = true;
+        bugReportButton = imageButton;
+    }
+    else
+    {
+        // fallback
+        useImageButton = false;
+        bugReportLabel.data = "B";
+        bugReportLabel.isLiteral = true;
+        TextButton* textButton = new TextButton();
+        int borderSize = 8;
+        Point buttonPosWithBorder = buttonPos + Point(borderSize/2, borderSize/2);
+        textButton->OnInit(buttonPosWithBorder, Point(36-borderSize,36-borderSize), 6, &bugReportLabel, 62);
+        textButton->bActive = true;
+        bugReportButton = textButton;
+    }
 }
 
 void CrashDialogManager::UpdateButtonHover(int x, int y)

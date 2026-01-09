@@ -60,7 +60,8 @@ private:
     class ConfirmWindow* instructionsDialog = nullptr;
     class ConfirmWindow* errorDialog = nullptr;
 
-    // Bug report button
-    class TextButton* bugReportButton = nullptr;
+    // Bug report button (can be TextButton or image Button depending on mod resources)
+    GenericButton* bugReportButton = nullptr;
     TextString bugReportLabel;
+    bool useImageButton = false;
 };
