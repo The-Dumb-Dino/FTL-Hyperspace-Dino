@@ -1,3 +1,6 @@
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// To regenerate, run: ./libzhlgen/parsefuncs.sh
+
 #include "FTLGameWin32.h"
 #include "zhl_internal.h"
 
