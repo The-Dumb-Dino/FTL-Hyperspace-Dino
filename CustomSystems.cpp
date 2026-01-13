@@ -1741,6 +1741,111 @@ int g_clonePercentTooltipLevel = 0;
 CloneSystem* g_cloneSystem = nullptr;
 std::vector<float> vanillaCloneTime = {12.0, 9.0, 7.0};
 
+// Rewritten to resolve Inline of CloneHealing and half inline on linux (thunk was inlined)
+HOOK_METHOD_PRIORITY(ShipManager, JumpArrive, 9999, () -> void)
+{
+    LOG_HOOK("HOOK_METHOD_PRIORITY -> ShipManager::JumpArrive -> Begin (CustomSystems.cpp)\n")
+
+    // Some preparations
+    this->damMessages.clear();
+    this->jump_timer.first = 0.f;
+    this->minBeaconHealth = this->ship.hullIntegrity.first;
+
+    // "Exit FTL travel" animation
+    this->jumpAnimation.StartReverse(-1.0);
+
+    // Jump update for the weapon system
+    if (this->systemKey[SYS_WEAPONS] != -1)
+    {
+        this->weaponSystem->Jump();
+    }
+
+    // Update every crew state
+    for (CrewMember* crew : this->vCrewList)
+    {
+        crew->Jump();
+    }
+
+    // Jump update for the shield system
+    if (this->shieldSystem)
+    {
+        this->shieldSystem->Jump();
+    }
+
+    // Destroy leftover enemy drones on board the ship
+    this->DestroyBoardingDrones();
+
+    // Apply clonebay heal
+    this->CloneHealing(); // FIX HERE: was fully inlined on MacOS and partially on linux
+
+    // Not sure what this variable does but its updated
+    this->showNetwork = false;
+
+    // Update and reset every system cooldown etc. if the previous beacon wasn't dangerous
+    if (this->bWasSafe)
+    {
+        if (this->systemKey[SYS_MIND] != -1)
+        {
+            // this->mindSystem->ForceReady(); // This is actually just a thunk for LockSystem(0)
+            this->mindSystem->LockSystem(0);
+        }
+        if (this->systemKey[SYS_SHIELDS] != -1)
+        {
+            this->shieldSystem->LockSystem(0);
+        }
+        if (this->systemKey[SYS_ENGINES] != -1)
+        {
+            this->vSystemList[SYS_ENGINES]->LockSystem(0);
+        }
+        if (this->systemKey[SYS_WEAPONS] != -1)
+        {
+            this->weaponSystem->LockSystem(0);
+        }
+        if (this->systemKey[SYS_PILOT] != -1)
+        {
+            this->vSystemList[SYS_PILOT]->LockSystem(0);
+        }
+    }
+    // Set current beacon as unsafe by default
+    this->bWasSafe = false;
+
+    // Play the jump sound
+    G_->GetSoundControl()->PlaySoundMix("jumpArrive", -1.0, false);
+}
+
+// Forced the function to behave the same on all platforms (basically for linux which thunked the systemKey if statement)
+HOOK_METHOD_PRIORITY(ShipManager, CloneHealing, 9999, () -> void)
+{
+    LOG_HOOK("HOOK_METHOD_PRIORITY -> ShipManager::CloneHealing -> Begin (CustomSystems.cpp)\n")
+
+    // Only run if clonebay is installed
+    if (this->systemKey[SYS_CLONEBAY] != -1)
+    {
+        // Some weird calculation for the heal amount
+        int heal;
+        if (this->cloneSystem->healthState.first != 0) // I think here it checks if it's operational
+        {
+            heal = this->cloneSystem->GetMaxPower();
+        }
+        else
+        {
+            heal = CloneSystem::GetJumpHealth(heal);
+        }
+
+        // Add hp to every non-drone crew on the players ship
+        for (CrewMember* crew: this->vCrewList)
+        {
+            if (crew->iShipId == 0)
+            {
+                if (!crew->IsDrone())
+                {
+                    crew->DirectModifyHealth(static_cast<float>(heal));
+                }
+            }
+        }
+    }
+}
+
 HOOK_METHOD(ShipManager, CloneHealing, () -> void)
 {
     LOG_HOOK("HOOK_METHOD -> ShipManager::CloneHealing -> Begin (CustomSystems.cpp)\n")

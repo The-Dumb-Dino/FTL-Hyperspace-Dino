@@ -7174,6 +7174,13 @@ struct Ship : ShipObject
 		return nullptr;
 	}
 
+	void ProjectileStrike(int roomId, float damage)
+	{
+		if (roomId != -1)
+		{
+			this->hullIntegrity.first -= static_cast<int>(damage);
+		}
+	}
 
 	struct DoorState
 	{
@@ -7305,6 +7312,7 @@ struct Spreader_Fire;
 struct Spreader_Fire : ShipObject
 {
 	LIBZHL_API int CounterRoom(int roomId);
+	LIBZHL_API bool StartInRoom(int roomId, int count);
 	LIBZHL_API void UpdateSpread();
 	
 	int count;
@@ -7344,6 +7352,47 @@ struct ShipManager : ShipObject
 		PowerManager *powerMan = PowerManager::GetPowerManager(iShipId);
 
 		return std::pair<int, int>(powerMan->currentPower.second, powerMan->currentPower.second - powerMan->currentPower.first);
+	}
+
+	inline int GetSelectedRoom(int x, int y, bool bIncludeWalls)
+	{
+		return this->ship.GetSelectedRoomId(x, y, bIncludeWalls);
+	}
+
+	inline void LockdownRoom(int roomId, Pointf position)
+	{
+		return this->ship.LockdownRoom(roomId, position);
+	}
+
+	void DestroyBoardingDrones()
+	{
+		for (CrewMember* crew : this->vCrewList)
+		{
+			if (crew->GetIntruder() && crew->IsDrone() && this->iShipId == 0)
+			{
+				crew->DirectModifyHealth(-1000.f);
+			}
+		}
+	}
+
+	bool ResistDamage(const std::string& augment) // Called in DamageArea & DamageBeam
+	{   
+		if (this->HasAugmentation(augment) != 0)
+		{
+			/* 
+			Begin: inline int randNumber(int min, int max)
+			Begin: inline int Get(RandomNumberGenerator * this)
+			if (Globals::RNG.useSysRand == false) {
+			iVar4 = random32();
+			}
+			else {
+			iVar4 = rand();
+			}
+			*/
+			int random = rand();
+			return random % 100 + 1 <= static_cast<float>(this->GetAugmentationValue(augment) * 100);
+		}
+		return false;
 	}
 
 	bool SetDummyOxygen(bool useDummyOxygen);
