@@ -4217,6 +4217,147 @@ HOOK_METHOD(ShipManager, DamageCrew, (CrewMember *crew, Damage dmg) -> bool)
     return super(crew, dmg);
 }
 
+HOOK_METHOD_PRIORITY(ShipManager, DamageArea, 9999, (Pointf location, Damage damage, bool forceHit) -> bool)
+{
+    LOG_HOOK("HOOK_METHOD_PRIORITY -> ShipManager::DamageArea -> Begin (CustomCrew.cpp)\n")
+
+    int roomId = this->GetSelectedRoom(location.x, location.y, true);
+    if ((!this->bJumping && !forceHit) || this->bJumping)
+    {
+        if (roomId == -1) return false;
+
+        if (this->GetDodged())
+        {
+            if (!this->bJumping)
+            {
+                this->damMessages.push_back(new DamageMessage(1.f, location, DamageMessage::MISS));
+            }
+
+            if (this->IsCloaked())
+            {
+                this->damageCloaked = this->damageCloaked + damage.iDamage;
+            }
+
+            return false;
+        }
+    }
+
+    for (CrewMember* crew : this->vCrewList)
+    {
+        if (crew->iRoomId == roomId)
+        {
+            this->DamageCrew(crew, damage);
+        }
+    }
+
+    bool resistHullDamage = this->ResistDamage("ROCK_ARMOR");
+    /*
+    Begin: inline int Get(RandomNumberGenerator * this)
+    if (Globals::RNG.useSysRand == false)
+    {
+        random_ = random32();
+    }
+    else
+    {
+        random_ = rand();
+    }
+    */
+    if (rand() % 10 < damage.fireChance)
+    {
+        this->fireSpreader.StartInRoom(roomId, 2);
+    }
+    else
+    {
+        /*
+        Begin: inline int Get(RandomNumberGenerator * this)
+        if (Globals::RNG.useSysRand == false) {
+        random_ = random32();
+        }
+        else {
+        random_ = rand();
+        }
+        */
+        if ((rand() % 10 < damage.breachChance) && ((!resistHullDamage || (damage.breachChance == 10))))
+        {
+            resistHullDamage = false;
+            this->ship.BreachRandomHull(roomId);
+        }
+    }
+    bool resistSystemDamage = false;
+    ShipSystem* targetSystem = this->GetSystemInRoom(roomId);
+    if (targetSystem)
+    {
+        if (this->ResistDamage("SYSTEM_CASING") && !targetSystem->CompletelyDestroyed()) 
+        {
+            resistSystemDamage = true;
+            if (damage.iDamage < 1)
+            {
+                resistSystemDamage = 0 < damage.iSystemDamage;
+            }
+        }
+    }
+
+    Damage sysDamage = damage;
+    if (resistSystemDamage)
+    {
+        // When system casing resists damage, zero out hull and system damage but keep shield piercing and personnel damage
+        sysDamage.iDamage = 0;
+        sysDamage.iSystemDamage = 0;
+        // Keep iShieldPiercing and iPersDamage as they are (no need for bitwise operations)
+    }
+    this->DamageSystem(roomId, sysDamage);
+
+    if (!resistHullDamage || damage.iDamage < 0)
+    {
+        float hullDamage;
+        if (!this->GetSystemInRoom(roomId) && damage.bHullBuster)
+        {
+            hullDamage = damage.iDamage * 2;
+        }
+        else
+        {
+            hullDamage = damage.iDamage;
+        }
+
+        if (!this->bJumping)
+        {
+            this->ship.ProjectileStrike(roomId, hullDamage);
+        }
+
+        this->iLastDamage = static_cast<int>(hullDamage);
+
+        if (hullDamage > 0.0)
+        {
+            this->CheckCrystalAugment(location);
+        }
+
+        if ((this->ship.hullIntegrity.first < 1 && 0 < this->ship.hullIntegrity.first) && damage.crystalShard && (this->iShipId != 0))
+        {
+            G_->GetAchievementTracker()->SetAchievement("ACH_CRYSTAL_SHARD", false, true);
+        }
+    }
+
+    if (damage.bLockdown)
+    {
+        this->LockdownRoom(roomId, this->ship.GetRoomCenter(roomId));
+    }
+
+    if (resistSystemDamage || resistHullDamage && damage.iDamage > 0)
+    {
+        this->damMessages.push_back(new DamageMessage(1.f, location, DamageMessage::RESIST));
+    }
+    else
+    {
+        if (this->iLastDamage > 0)
+        {
+            this->damMessages.push_back(new DamageMessage(1.f, this->iLastDamage, location, false));
+        }
+    }
+    return true;
+}
+
+
+
 HOOK_METHOD_PRIORITY(ShipManager, DamageArea, -1000, (Pointf location, Damage dmg, bool forceHit) -> bool)
 {
     LOG_HOOK("HOOK_METHOD_PRIORITY -> ShipManager::DamageArea -> Begin (CustomCrew.cpp)\n")

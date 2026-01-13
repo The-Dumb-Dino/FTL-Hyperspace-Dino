@@ -7660,6 +7660,14 @@ struct Ship : ShipObject
 		return nullptr;
 	}
 
+	void ProjectileStrike(int roomId, float damage)
+	{
+		if (roomId != -1)
+		{
+			this->hullIntegrity.first -= static_cast<int>(damage);
+		}
+	}
+
 	struct DoorState
 	{
 		DoorStateType state;
@@ -7785,6 +7793,7 @@ struct Spreader_Fire;
 struct Spreader_Fire : ShipObject
 {
 	LIBZHL_API int CounterRoom(int roomId);
+	LIBZHL_API bool StartInRoom(int roomId, int count);
 	LIBZHL_API void UpdateSpread();
 	
 	int count;
@@ -7814,16 +7823,57 @@ struct ShipManager : ShipObject
 		return this->ship.GetRoomCenter(rng % rooms);
 	}
 
-	inline Pointf GetRoomCenter(int roomId)
-	{
-		return this->ship.GetRoomCenter(roomId);
-	}
-
 	std::pair<int, int> GetAvailablePower()
 	{
 		PowerManager* powerMan = PowerManager::GetPowerManager(this->iShipId);
 		
 		return std::pair<int, int>(powerMan->currentPower.second, powerMan->currentPower.second - powerMan->currentPower.first);
+	}
+
+	inline Pointf GetRoomCenter(int roomId)
+	{
+		return this->ship.GetRoomCenter(roomId);
+	}
+
+	inline int GetSelectedRoom(int x, int y, bool bIncludeWalls)
+	{
+		return this->ship.GetSelectedRoomId(x, y, bIncludeWalls);
+	}
+
+	inline void LockdownRoom(int roomId, Pointf position)
+	{
+		return this->ship.LockdownRoom(roomId, position);
+	}
+
+	void DestroyBoardingDrones()
+	{
+		for (CrewMember* crew : this->vCrewList)
+		{
+			if (crew->GetIntruder() && crew->IsDrone() && this->iShipId == 0)
+			{
+				crew->DirectModifyHealth(-1000.f);
+			}
+		}
+	}
+	
+	bool ResistDamage(const std::string& augment) // Called in DamageArea & DamageBeam
+	{   
+		if (this->HasAugmentation(augment) != 0)
+		{
+			/* 
+			Begin: inline int randNumber(int min, int max)
+			Begin: inline int Get(RandomNumberGenerator * this)
+			if (Globals::RNG.useSysRand == false) {
+			iVar4 = random32();
+			}
+			else {
+			iVar4 = rand();
+			}
+			*/
+			int random = rand();
+			return random % 100 + 1 <= static_cast<float>(this->GetAugmentationValue(augment) * 100);
+		}
+		return false;
 	}
 
 	bool SetDummyOxygen(bool useDummyOxygen);
@@ -7865,11 +7915,11 @@ struct ShipManager : ShipObject
 	LIBZHL_API Drone *CreateDrone(DroneBlueprint *drone);
 	LIBZHL_API SpaceDrone *CreateSpaceDrone(const DroneBlueprint *drone);
 	LIBZHL_API int CreateSystems();
-	LIBZHL_API bool DamageArea(Pointf location, Damage dmg, bool forceHit);
-	LIBZHL_API bool DamageBeam(Pointf location1, Pointf location2, Damage dmg);
-	LIBZHL_API bool DamageCrew(CrewMember *crew, Damage dmg);
-	LIBZHL_API int DamageHull(int dmg, bool force);
-	LIBZHL_API void DamageSystem(int systemId, Damage damage);
+	LIBZHL_API bool DamageArea(Pointf location, Damage damage, bool forceHit);
+	LIBZHL_API bool DamageBeam(Pointf current, Pointf last, Damage damage);
+	LIBZHL_API bool DamageCrew(CrewMember *crew, Damage damage);
+	LIBZHL_API int DamageHull(int amount, bool force);
+	LIBZHL_API void DamageSystem(int roomId, Damage damage);
 	LIBZHL_API bool DoSensorsProvide(int vision);
 	LIBZHL_API bool DoorsFunction();
 	LIBZHL_API void ExportBattleState(int file);
