@@ -4217,100 +4217,106 @@ HOOK_METHOD(ShipManager, DamageCrew, (CrewMember *crew, Damage dmg) -> bool)
     return super(crew, dmg);
 }
 
+// This to be rewritten because some hooks wouldnt run since their function got inlined by the compiler on MacOS
 HOOK_METHOD_PRIORITY(ShipManager, DamageArea, 9999, (Pointf location, Damage damage, bool forceHit) -> bool)
 {
     LOG_HOOK("HOOK_METHOD_PRIORITY -> ShipManager::DamageArea -> Begin (CustomCrew.cpp)\n")
-
+    
+    // Get current target
     int roomId = this->GetSelectedRoom(location.x, location.y, true);
-    if ((!this->bJumping && !forceHit) || this->bJumping)
+
+    // Return if the projectile hits outside of a room
+    if (roomId == -1)
     {
-        if (roomId == -1) return false;
-
-        if (this->GetDodged())
-        {
-            if (!this->bJumping)
-            {
-                this->damMessages.push_back(new DamageMessage(1.f, location, DamageMessage::MISS));
-            }
-
-            if (this->IsCloaked())
-            {
-                this->damageCloaked = this->damageCloaked + damage.iDamage;
-            }
-
-            return false;
-        }
+        return false;
     }
 
+    // Projectile miss logic
+    if ((this->bJumping || !forceHit) && this->GetDodged())
+    {
+        if (!this->bJumping) // this->GetIsJumping()
+        {
+            this->damMessages.push_back(new DamageMessage(1.f, location, DamageMessage::MISS));
+        }
+
+        // Stealth cruiser evade damage achievement 
+        if (this->IsCloaked())
+        {
+            this->damageCloaked += damage.iDamage;
+        }
+
+        // Return since no damage will be inflicted
+        return false;
+    }
+
+    // Crew damage logic
     for (CrewMember* crew : this->vCrewList)
     {
         if (crew->iRoomId == roomId)
         {
-            this->DamageCrew(crew, damage);
+            this->DamageCrew(crew, damage); // DamageCrew() was inlined for MacOS
         }
     }
 
-    bool resistHullDamage = this->ResistDamage("ROCK_ARMOR");
-    /*
-    Begin: inline int Get(RandomNumberGenerator * this)
-    if (Globals::RNG.useSysRand == false)
+
+    // Rock plating logic
+    bool rockPlatingResist = this->ResistDamage("ROCK_ARMOR");
+    int rng;
+    if (*Globals_RNG)
     {
-        random_ = random32();
+        rng = rand();
     }
     else
     {
-        random_ = rand();
+        rng = random32();
     }
-    */
-    if (rand() % 10 < damage.fireChance)
+    if (rng % 10 < damage.fireChance)
     {
         this->fireSpreader.StartInRoom(roomId, 2);
     }
     else
     {
-        /*
-        Begin: inline int Get(RandomNumberGenerator * this)
-        if (Globals::RNG.useSysRand == false) {
-        random_ = random32();
-        }
-        else {
-        random_ = rand();
-        }
-        */
-        if ((rand() % 10 < damage.breachChance) && ((!resistHullDamage || (damage.breachChance == 10))))
+        if (*Globals_RNG)
         {
-            resistHullDamage = false;
+            rng = rand();
+        }
+        else
+        {
+            rng = random32();
+        }
+        if ((damage.breachChance == 10) || (!rockPlatingResist && rng % 10 < damage.breachChance))
+        {
             this->ship.BreachRandomHull(roomId);
         }
     }
-    bool resistSystemDamage = false;
-    ShipSystem* targetSystem = this->GetSystemInRoom(roomId);
-    if (targetSystem)
+
+    // System casing logic
+    bool systemCasingResist;
+    if (this->GetSystemInRoom(roomId) && this->ResistDamage("SYSTEM_CASING"))
     {
-        if (this->ResistDamage("SYSTEM_CASING") && !targetSystem->CompletelyDestroyed()) 
-        {
-            resistSystemDamage = true;
-            if (damage.iDamage < 1)
-            {
-                resistSystemDamage = 0 < damage.iSystemDamage;
-            }
-        }
+        systemCasingResist = 0 < damage.iSystemDamage || 0 < damage.iDamage;
+    }
+    else
+    {
+        systemCasingResist = false;
     }
 
-    Damage sysDamage = damage;
-    if (resistSystemDamage)
+    // System damage logic
+    Damage systemDamage = damage;
+    if (systemCasingResist)
     {
-        // When system casing resists damage, zero out hull and system damage but keep shield piercing and personnel damage
-        sysDamage.iDamage = 0;
-        sysDamage.iSystemDamage = 0;
-        // Keep iShieldPiercing and iPersDamage as they are (no need for bitwise operations)
+        // Annul the damage if the system casing triggered
+        systemDamage.iSystemDamage = 0;
+        systemDamage.iDamage = 0;
     }
-    this->DamageSystem(roomId, sysDamage);
+    this->DamageSystem(roomId, systemDamage);
 
-    if (!resistHullDamage || damage.iDamage < 0)
+    if ((damage.iDamage < 0) || !rockPlatingResist)
     {
-        float hullDamage;
-        if (!this->GetSystemInRoom(roomId) && damage.bHullBuster)
+        int hullDamage;
+
+        // Hull bust double damage logic
+        if (!this->GetSystemInRoom(roomId) && damage.bHullBuster) // GetSystemInRoom() was inlined for MacOS
         {
             hullDamage = damage.iDamage * 2;
         }
@@ -4319,36 +4325,42 @@ HOOK_METHOD_PRIORITY(ShipManager, DamageArea, 9999, (Pointf location, Damage dam
             hullDamage = damage.iDamage;
         }
 
+        // I guess this ensures that projectles only hit if the ship didnt jump away yet
         if (!this->bJumping)
         {
-            this->ship.ProjectileStrike(roomId, hullDamage);
+            this->ship.ProjectileStrike(roomId, static_cast<float>(hullDamage));
         }
 
-        this->iLastDamage = static_cast<int>(hullDamage);
+        // Store this for whatever reason
+        this->iLastDamage = hullDamage;
 
-        if (hullDamage > 0.0)
+        // Check if crystal shards should be fired
+        if (0 < hullDamage)
         {
             this->CheckCrystalAugment(location);
         }
 
-        if ((this->ship.hullIntegrity.first < 1 && 0 < this->ship.hullIntegrity.first) && damage.crystalShard && (this->iShipId != 0))
+        // Kill ship with crystal shard achievement
+        if ((0 < this->ship.hullIntegrity.first) && (this->ship.hullIntegrity.first < 1) && damage.crystalShard && (this->iShipId != 0))
         {
             G_->GetAchievementTracker()->SetAchievement("ACH_CRYSTAL_SHARD", false, true);
         }
     }
 
+    // Lock the room if the weapon features lockdown traits
     if (damage.bLockdown)
     {
         this->LockdownRoom(roomId, this->ship.GetRoomCenter(roomId));
     }
 
-    if (resistSystemDamage || resistHullDamage && damage.iDamage > 0)
+    // Damage messages (Either the amount or resist)
+    if (damage.iDamage > 0)
     {
-        this->damMessages.push_back(new DamageMessage(1.f, location, DamageMessage::RESIST));
-    }
-    else
-    {
-        if (this->iLastDamage > 0)
+        if ((rockPlatingResist || systemCasingResist) && damage.iDamage > 0)
+        {
+            this->damMessages.push_back(new DamageMessage(1.f, location, DamageMessage::RESIST));
+        }
+        else
         {
             this->damMessages.push_back(new DamageMessage(1.f, this->iLastDamage, location, false));
         }
