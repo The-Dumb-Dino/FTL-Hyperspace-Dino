@@ -457,7 +457,70 @@ HOOK_METHOD_PRIORITY(Ship, OnRenderWalls, 9999, (bool forceView, bool doorContro
         float alpha = GetCloakAlpha(false);
         room->OnRenderWalls(alpha);
     }
+
     CSurface::GL_RenderPrimitive(wallsPrimitive);
+
+#ifdef __APPLE__
+    ShipManager* shipManager = G_->GetShipManager(iShipId);
+    if (shipManager != nullptr)
+    {
+        for (ShipSystem* sys : shipManager->vSystemList)
+        {
+            int sysId = sys->GetId();
+            if (sysId >= SYS_TEMPORAL && sys->IsRoomBased())
+            {
+                int roomId = sys->GetRoomId();
+                if (roomId >= 0 && roomId < (int)vRoomList.size())
+                {
+                    Room* room = vRoomList[roomId];
+                    if (room)
+                    {
+                        float centerX = room->rect.x + room->rect.w / 2.f;
+                        float centerY = room->rect.y + room->rect.h / 2.f;
+                        std::string sysName = ShipSystem::SystemIdToName(sysId);
+
+                        std::string basePath = "icons/s_" + sysName + "_overlay.png";
+                        std::string highlightPath = "icons/s_" + sysName + "_overlay2.png";
+
+                        GL_Texture* baseTex = G_->GetResources()->GetImageId(basePath);
+                        GL_Texture* highlightTex = G_->GetResources()->GetImageId(highlightPath);
+
+                        if (baseTex == nullptr || baseTex->width_ <= 0)
+                            continue;
+
+                        float iconX = centerX - baseTex->width_ / 2.f;
+                        float iconY = centerY - baseTex->height_ / 2.f;
+
+                        bool isHovered = false;
+                        if (iShipId == 0)
+                        {
+                            SystemBox* sysBox = G_->GetCApp()->gui->sysControl.GetSystemBox(sysId);
+                            if (sysBox != nullptr && sysBox->mouseHover)
+                            {
+                                isHovered = true;
+                            }
+                        }
+
+                        GL_Color greyColor(0.49f, 0.49f, 0.49f, 1.f);
+                        CSurface::GL_BlitImage(baseTex, iconX, iconY,
+                                               (float)baseTex->width_, (float)baseTex->height_,
+                                               0.f, greyColor, false);
+
+                        if (isHovered && highlightTex != nullptr && highlightTex->width_ > 0)
+                        {
+                            float highlightX = centerX - highlightTex->width_ / 2.f;
+                            float highlightY = centerY - highlightTex->height_ / 2.f;
+                            GL_Color yellowColor(1.f, 1.f, 0.f, 1.f);
+                            CSurface::GL_BlitImage(highlightTex, highlightX, highlightY,
+                                                   (float)highlightTex->width_, (float)highlightTex->height_,
+                                                   0.f, yellowColor, false);
+                        }
+                    }
+                }
+            }
+        }
+    }
+#endif
     UpdateDoorsPrimitive(doorControlMode);
     float alpha = GetCloakAlpha(doorControlMode);
     CSurface::GL_RenderPrimitiveWithAlpha(doorsPrimitive, alpha);
