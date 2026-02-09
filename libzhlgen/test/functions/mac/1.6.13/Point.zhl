@@ -111,9 +111,8 @@ struct Point
 		return a.y==b.y;
 	}
 
-	friend bool operator!=(const Point& a, const Point& b)
+	friend bool operator!=(const Point &a, const Point &b)
 	{
-		if (a.x == b.x) return false;
-		return a.y!=b.y;
+		return (a.x != b.x) || (a.y != b.y);
 	}
 }};

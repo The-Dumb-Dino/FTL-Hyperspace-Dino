@@ -4217,7 +4217,160 @@ HOOK_METHOD(ShipManager, DamageCrew, (CrewMember *crew, Damage dmg) -> bool)
     return super(crew, dmg);
 }
 
-// This to be rewritten because some hooks wouldnt run since their function got inlined by the compiler on MacOS
+
+// This had to be rewritten because some hooks wouldn't run since their function got inlined by the compiler on MacOS
+HOOK_METHOD_PRIORITY(ShipManager, DamageBeam, 9990, (Pointf current, Pointf last, Damage damage) -> bool)
+{
+    LOG_HOOK("HOOK_METHOD_PRIORITY -> ShipManager::DamageBeam -> Begin (Misc.cpp)\n")
+
+    // Abort is ship is jumping away or non-hostile
+    if (!this->_targetable.hostile || this->bJumping)
+    {
+        return false;
+    }
+
+    Point grid = ShipGraph::TranslateToGrid(current.x, current.y);
+    Point last_grid = ShipGraph::TranslateToGrid(last.x, last.y);
+    int roomId = this->GetSelectedRoom(current.x, current.y, true);
+    int last_roomId = this->GetSelectedRoom(last.x, last.y, true);
+
+    // Validate position being struck
+    if (!ShipGraph::Valid(grid) || roomId == -1)
+    {
+        return false;
+    }
+
+    bool resistSystemDamage = false; // this actually serves as the return value too
+    bool resistHull = this->ResistDamage("ROCK_ARMOR");
+    // Room based logic happens in this block
+    if (roomId != last_roomId)
+    {
+        // System casing logic
+        bool resistSystemDamage;
+        ShipSystem* sys = this->GetSystemInRoom(roomId);
+        if (sys && this->ResistDamage("SYSTEM_CASING"))
+        {
+            resistSystemDamage = 0 < damage.iSystemDamage || 0 < damage.iDamage;
+        }
+        else
+        {
+            resistSystemDamage = false;
+        }
+
+        // System damage logic
+        Damage systemDamage = damage;
+        if (resistSystemDamage)
+        {
+            // Annul the damage if the system casing triggered
+            systemDamage.iSystemDamage = 0;
+            systemDamage.iDamage = 0;
+        }
+        this->DamageSystem(roomId, systemDamage);
+
+        // Hull bust double damage logic
+        int hullDamage;
+        if (sys == nullptr && damage.bHullBuster) // Reduced this->GetSystemInRoom(roomId) call
+        {
+            hullDamage = damage.iDamage * 2;
+        }
+        else
+        {
+            hullDamage = damage.iDamage;
+        }
+
+        // Damage logic is handled in this block
+        if (!resistHull || hullDamage <= 0)
+        {
+            // Deal hull damage
+            this->ship.ProjectileStrike(roomId, hullDamage);
+
+            // Store the last damage amount that was dealt
+            this->iLastDamage = hullDamage;
+
+            // Allow crystal shard to be sent
+            if (0 < hullDamage)
+            {
+                this->CheckCrystalAugment(current);
+            }
+
+            // Display resist if system casing triggered
+            if (resistSystemDamage) goto SkipToResistMsg;
+
+            // Display dealt damage
+            if (0 < this->iLastDamage)
+            {    
+                this->damMessages.push_back(new DamageMessage(1.f, this->iLastDamage, current, false));
+            }
+        }
+        else
+        {
+            this->ship.ProjectileStrike(roomId, 0.f); // Could maybe even be removed
+            this->iLastDamage = 0;
+        SkipToResistMsg:
+            // Display resist if rock plating triggered
+            this->damMessages.push_back(new DamageMessage(1.f, current, DamageMessage::RESIST));
+        }
+
+        resistSystemDamage = true;
+        this->hitByBeam[roomId] = G_->GetCFPS()->GetUnpausedTime();
+    }
+
+    // Tile based logic happens in this block
+    if (grid != last_grid)
+    {
+        // Fire ignition
+        int fire;
+        if (*Globals_RNG == false) // Begin: inline int Get(RandomNumberGenerator * this)
+        {
+            fire = random32();
+        }
+        else
+        {
+            fire = rand();
+        }
+        if (fire % 10 < damage.fireChance)
+        {
+            this->fireSpreader.StartInGrid(grid.x, grid.y);
+        }
+
+        // Hull breaches
+        int breach;
+        if (*Globals_RNG == false) // Begin: inline int Get(RandomNumberGenerator * this)
+        {
+            breach = random32();
+        }
+        else
+        {
+            breach = rand();
+        }
+        if ((breach % 10 < damage.breachChance) && ((!resistHull || (damage.breachChance == 10))))
+        {
+            this->ship.BreachSpecificHull(grid.x, grid.y);
+        }
+
+        // Crew damage logic
+        for (CrewMember* crew : this->vCrewList)
+        {
+            if (grid == ShipGraph::TranslateToGrid(crew->x, crew->y))
+            {
+                if (this->DamageCrew(crew, damage))
+                {
+                    // Increment kill count for this swipe
+                    killedByBeam[damage.selfId]++;
+                    
+                    // Check for Slug Bio-beam achievement
+                    if (killedByBeam[damage.selfId] >= 3 && damage.iDamage == 0 && damage.iPersDamage > 0)
+                    {
+                        G_->GetAchievementTracker()->SetAchievement("ACH_SLUG_BIO", false, true);
+                    }
+                }
+            }
+        }
+    }
+    return resistSystemDamage;
+}
+
+// This had to be rewritten because some hooks wouldn't run since their function got inlined by the compiler on MacOS
 HOOK_METHOD_PRIORITY(ShipManager, DamageArea, 9999, (Pointf location, Damage damage, bool forceHit) -> bool)
 {
     LOG_HOOK("HOOK_METHOD_PRIORITY -> ShipManager::DamageArea -> Begin (CustomCrew.cpp)\n")
@@ -4292,7 +4445,8 @@ HOOK_METHOD_PRIORITY(ShipManager, DamageArea, 9999, (Pointf location, Damage dam
 
     // System casing logic
     bool systemCasingResist;
-    if (this->GetSystemInRoom(roomId) && this->ResistDamage("SYSTEM_CASING"))
+    ShipSystem* sys = this->GetSystemInRoom(roomId);
+    if (sys && this->ResistDamage("SYSTEM_CASING"))
     {
         systemCasingResist = 0 < damage.iSystemDamage || 0 < damage.iDamage;
     }
@@ -4313,10 +4467,9 @@ HOOK_METHOD_PRIORITY(ShipManager, DamageArea, 9999, (Pointf location, Damage dam
 
     if ((damage.iDamage < 0) || !rockPlatingResist)
     {
-        int hullDamage;
-
         // Hull bust double damage logic
-        if (!this->GetSystemInRoom(roomId) && damage.bHullBuster) // GetSystemInRoom() was inlined for MacOS
+        int hullDamage;
+        if (sys == nullptr && damage.bHullBuster) // Reduced this->GetSystemInRoom(roomId) call - (was inlined here on MacOS)
         {
             hullDamage = damage.iDamage * 2;
         }
@@ -4328,7 +4481,7 @@ HOOK_METHOD_PRIORITY(ShipManager, DamageArea, 9999, (Pointf location, Damage dam
         // I guess this ensures that projectles only hit if the ship didnt jump away yet
         if (!this->bJumping)
         {
-            this->ship.ProjectileStrike(roomId, static_cast<float>(hullDamage));
+            this->ship.ProjectileStrike(roomId, hullDamage);
         }
 
         // Store this for whatever reason

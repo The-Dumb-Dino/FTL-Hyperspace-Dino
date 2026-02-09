@@ -2348,6 +2348,10 @@ struct LIBZHL_INTERFACE CrewMember
 	void _HS_ResetPower();
 	void _HS_ActivatePower();
 
+	inline Point GetGridPosition()
+	{
+		return Point((int)this->x, (int)this->y);
+	}
 
 	virtual ~CrewMember() {}
 	virtual Point GetPosition() LIBZHL_PLACEHOLDER
@@ -3955,6 +3959,7 @@ struct CFPS;
 struct CFPS
 {
 	LIBZHL_API float GetSpeedFactor();
+	LIBZHL_API float GetUnpausedTime();
 	LIBZHL_API void OnLoop();
 	
 	float RunningTime;
@@ -5277,6 +5282,10 @@ struct ShipGraph
 		return Pointf(xx, yy);
 	}
 	
+	static bool Valid(Point p)
+	{
+		return p.x < 40 && p.y < 40;
+	}
 
 	LIBZHL_API void ComputeCenter();
 	LIBZHL_API int ConnectedGridSquares(int x1, int y1, int x2, int y2);
@@ -6095,6 +6104,8 @@ struct Fire;
 struct LIBZHL_INTERFACE Repairable : Selectable
 {
 	virtual ~Repairable() {}
+	virtual void SetSelected(int selected) LIBZHL_PLACEHOLDER
+	virtual int GetSelected() LIBZHL_PLACEHOLDER
 	virtual bool CompletelyDestroyed() LIBZHL_PLACEHOLDER
 	virtual std::string GetName() LIBZHL_PLACEHOLDER
 	virtual void SetName(std::string &name) LIBZHL_PLACEHOLDER
@@ -6130,11 +6141,39 @@ struct Spreadable : Repairable
 	std::string soundName;
 };
 
-struct Fire : Spreadable
+struct LIBZHL_INTERFACE Fire : Spreadable
 {
-	LIBZHL_API void OnLoop();
-	LIBZHL_API void UpdateDeathTimer(int connectedFires);
-	LIBZHL_API void UpdateStartTimer(int doorLevel);
+	virtual ~Fire() {}
+	virtual void SetSelected(int selected) LIBZHL_PLACEHOLDER
+	virtual int GetSelected() LIBZHL_PLACEHOLDER
+	virtual bool CompletelyDestroyed() LIBZHL_PLACEHOLDER
+	virtual std::string GetName() LIBZHL_PLACEHOLDER
+	virtual void SetName(std::string &name) LIBZHL_PLACEHOLDER
+	virtual void Repair() LIBZHL_PLACEHOLDER
+	virtual bool PartialRepair(float speed, bool autoRepair) LIBZHL_PLACEHOLDER
+	virtual bool PartialDamage(float amount) LIBZHL_PLACEHOLDER
+	virtual bool NeedsRepairing() LIBZHL_PLACEHOLDER
+	virtual bool Functioning() LIBZHL_PLACEHOLDER
+	virtual bool CanBeSabatoged() LIBZHL_PLACEHOLDER
+	virtual float GetDamage() LIBZHL_PLACEHOLDER
+	virtual Point GetLocation() LIBZHL_PLACEHOLDER
+	virtual Point GetGridLocation() LIBZHL_PLACEHOLDER
+	virtual void SetDamage(float diff) LIBZHL_PLACEHOLDER
+	virtual void SetMaxDamage(float damage) LIBZHL_PLACEHOLDER
+	virtual void SetLocation(Point location) LIBZHL_PLACEHOLDER
+	virtual void OnRenderHighlight() LIBZHL_PLACEHOLDER
+	virtual int GetId() LIBZHL_PLACEHOLDER
+	virtual bool IsRoomBased() LIBZHL_PLACEHOLDER
+	virtual int GetRoomId() LIBZHL_PLACEHOLDER
+	virtual bool Ioned(int amount) LIBZHL_PLACEHOLDER
+	virtual void SetRoomId() LIBZHL_PLACEHOLDER
+	virtual bool Present() LIBZHL_PLACEHOLDER
+	LIBZHL_API virtual void UpdateDeathTimer(int connectedFires);
+	LIBZHL_API virtual void UpdateStartTimer(int doorLevel);
+	virtual void ResetStartTimer() LIBZHL_PLACEHOLDER
+	virtual void Spread() LIBZHL_PLACEHOLDER
+	LIBZHL_API virtual void OnLoop();
+	virtual void OnInit() LIBZHL_PLACEHOLDER
 	
 	float fDeathTimer;
 	float fStartTimer;
@@ -7311,6 +7350,12 @@ struct Spreader_Fire;
 
 struct Spreader_Fire : ShipObject
 {
+    // Originally of type bool but each one was inlined so I have no idea what it was for
+    inline void StartInGrid(int x, int y)
+    {
+        this->grid.at(x).at(y).Spread();
+    }
+
 	LIBZHL_API int CounterRoom(int roomId);
 	LIBZHL_API bool StartInRoom(int roomId, int count);
 	LIBZHL_API void UpdateSpread();

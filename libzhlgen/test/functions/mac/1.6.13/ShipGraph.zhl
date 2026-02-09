@@ -44,24 +44,22 @@ struct ShipGraph depends (Point, Pointf, Room)
 
 	inline static Point TranslateFromGrid(int x, int y)
 	{
-		Point ret = Point(x * 35, y * 35);
-		return ret;
+		return Point(x * 35, y * 35);
 	}
 
 	inline static Point TranslateFromGrid(Point p)
 	{
-		return TranslateFromGrid(p.x, p.y);
+		return p * 35;
 	}
 
 	inline static Point TranslateToGrid(int x, int y)
 	{
-		Point ret = Point(x / 35, y / 35);
-		return ret;
+		return Point(x / 35, y / 35);
 	}
 
 	inline static Point TranslateToGrid(Point p)
 	{
-		return TranslateToGrid(p.x, p.y);
+		return p / 35;
 	}
 
 	inline int ConnectedGridSquaresPoint(Point p1, Point p2)
@@ -173,5 +171,10 @@ struct ShipGraph depends (Point, Pointf, Room)
 			return this->rooms[roomId]->bBlackedOut;
 		}
 		return false;
+	}
+	
+	static bool Valid(Point p)
+	{
+		return p.x < 40 && p.y < 40;
 	}
 }};

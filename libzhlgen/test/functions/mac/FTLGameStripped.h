@@ -652,28 +652,30 @@ struct Repairable
 
 struct VTable_Repairable
 {
-    void (__thiscall *Free)(Repairable *this);
-    bool (__thiscall *CompletelyDestroyed)(Repairable *this);
-    std__string (__thiscall *GetName)(Repairable *this);
-    void (__thiscall *SetName)(Repairable *this, std__string* name);
-    void (__thiscall *Repair)(Repairable *this);
-    bool (__thiscall *PartialRepair)(Repairable *this, float speed, bool autoRepair);
-    bool (__thiscall *PartialDamage)(Repairable *this, float amount);
-    bool (__thiscall *NeedsRepairing)(Repairable *this);
-    bool (__thiscall *Functioning)(Repairable *this);
-    bool (__thiscall *CanBeSabatoged)(Repairable *this);
-    float (__thiscall *GetDamage)(Repairable *this);
-    Point (__thiscall *GetLocation)(Repairable *this);
-    Point (__thiscall *GetGridLocation)(Repairable *this);
-    void (__thiscall *SetDamage)(Repairable *this, float diff);
-    void (__thiscall *SetMaxDamage)(Repairable *this, float damage);
-    void (__thiscall *SetLocation)(Repairable *this, Point location);
-    void (__thiscall *OnRenderHighlight)(Repairable *this);
-    int (__thiscall *GetId)(Repairable *this);
-    bool (__thiscall *IsRoomBased)(Repairable *this);
-    int (__thiscall *GetRoomId)(Repairable *this);
-    bool (__thiscall *Ioned)(Repairable *this, int amount);
-    void (__thiscall *SetRoomId)(Repairable *this);
+  void (__thiscall *Free)(Repairable *this);
+  void (__thiscall *SetSelected)(Repairable *this, int selected); // actually Selectable*
+  int (__thiscall *GetSelected)(Repairable *this); // actually Selectable*
+  bool (__thiscall *CompletelyDestroyed)(Repairable *this);
+  std__string (__thiscall *GetName)(Repairable *this);
+  void (__thiscall *SetName)(Repairable *this, std::string& name);
+  void (__thiscall *Repair)(Repairable *this);
+  bool (__thiscall *PartialRepair)(Repairable *this, float speed, bool autoRepair);
+  bool (__thiscall *PartialDamage)(Repairable *this, float amount);
+  bool (__thiscall *NeedsRepairing)(Repairable *this);
+  bool (__thiscall *Functioning)(Repairable *this);
+  bool (__thiscall *CanBeSabatoged)(Repairable *this);
+  float (__thiscall *GetDamage)(Repairable *this);
+  Point (__thiscall *GetLocation)(Repairable *this);
+  Point (__thiscall *GetGridLocation)(Repairable *this);
+  void (__thiscall *SetDamage)(Repairable *this, float diff);
+  void (__thiscall *SetMaxDamage)(Repairable *this, float damage);
+  void (__thiscall *SetLocation)(Repairable *this, Point location);
+  void (__thiscall *OnRenderHighlight)(Repairable *this);
+  int (__thiscall *GetId)(Repairable *this);
+  bool (__thiscall *IsRoomBased)(Repairable *this);
+  int (__thiscall *GetRoomId)(Repairable *this);
+  bool (__thiscall *Ioned)(Repairable *this, int amount);
+  void (__thiscall *SetRoomId)(Repairable *this);
 };
 
 /* 294 */
@@ -4856,6 +4858,7 @@ struct Spreadable
 /* 192 */
 struct Fire
 {
+  VTable_Fire *_vtable;
   Spreadable _base;
   float fDeathTimer;
   float fStartTimer;
@@ -4863,6 +4866,41 @@ struct Fire
   Animation fireAnimation;
   Animation smokeAnimation;
   bool bWasOnFire;
+};
+
+struct VTable_Fire
+{
+  void (__thiscall *Free)(Fire *this);
+  void (__thiscall *SetSelected)(Fire *this, int selected); // actually Selectable*
+  int (__thiscall *GetSelected)(Fire *this); // actually Selectable*
+  bool (__thiscall *CompletelyDestroyed)(Fire *this); // actually Repairable*
+  std__string (__thiscall *GetName)(Fire *this); // actually Repairable*
+  void (__thiscall *SetName)(Fire *this, std::string& name); // actually Repairable*
+  void (__thiscall *Repair)(Fire *this);
+  bool (__thiscall *PartialRepair)(Fire *this, float speed, bool autoRepair); // actually Repairable*
+  bool (__thiscall *PartialDamage)(Fire *this, float amount); // actually Repairable*
+  bool (__thiscall *NeedsRepairing)(Fire *this); // actually Repairable*
+  bool (__thiscall *Functioning)(Fire *this); // actually Repairable*
+  bool (__thiscall *CanBeSabatoged)(Fire *this); // actually Repairable*
+  float (__thiscall *GetDamage)(Fire *this); // actually Repairable*
+  Point (__thiscall *GetLocation)(Fire *this); // actually Repairable*
+  Point (__thiscall *GetGridLocation)(Fire *this); // actually Repairable*
+  void (__thiscall *SetDamage)(Fire *this, float diff); // actually Repairable*
+  void (__thiscall *SetMaxDamage)(Fire *this, float damage); // actually Repairable*
+  void (__thiscall *SetLocation)(Fire *this, Point location); // actually Repairable*
+  void (__thiscall *OnRenderHighlight)(Fire *this); // actually Repairable*
+  int (__thiscall *GetId)(Fire *this); // actually Repairable*
+  bool (__thiscall *IsRoomBased)(Fire *this); // actually Repairable*
+  int (__thiscall *GetRoomId)(Fire *this); // actually Repairable*
+  bool (__thiscall *Ioned)(Fire *this, int amount); // actually Repairable*
+  void (__thiscall *SetRoomId)(Fire *this); // actually Repairable*
+  bool (__thiscall *Present)(Fire *this);
+  void (__thiscall *UpdateDeathTimer)(Fire *this, int connectedFires);
+  void (__thiscall *UpdateStartTimer)(Fire *this, int doorLevel);
+  void (__thiscall *ResetStartTimer)(Fire *this);
+  void (__thiscall *Spread)(Fire *this);
+  void (__thiscall *OnLoop)(Fire *this);
+  void (__thiscall *OnInit)(Fire *this);
 };
 
 /* 693 */
