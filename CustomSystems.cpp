@@ -312,6 +312,71 @@ HOOK_STATIC(ShipSystem, NameToSystemId, (std::string& name) -> int)
     return super(name);
 }
 
+/* 
+// CreateSystemBoxes is inlined into the ShipSystem constructor on MacOS, this reimplements some of it's logic adjusted for custom systems
+
+// MacOS specific calls
+CreateStoreBoxes:10011f4c1(c),
+Print:10019894b(c),
+
+// Linux specific calls
+ShipSystem:0064f3f6(c),
+
+the functions above should be rewritten eventually to call the hook correctly
+*/
+#ifdef __APPLE__
+HOOK_METHOD_PRIORITY(ShipSystem, constructor, 9998, (int type, int roomId, int shipId, int starting_power) -> void)
+{
+    LOG_HOOK("HOOK_METHOD_PRIORITY -> ShipSystem::constructor -> Begin (CustomSystems.cpp)\n")
+
+    super(type, roomId, shipId, starting_power);
+
+    // green, grey orange, red, blue
+    if (this->GetId() >= SYS_TEMPORAL)
+    {
+        std::string sysName = this->GetName();
+        std::string color;
+        GL_Texture* tex;
+
+        this->imageIcon =  G_->GetResources()->GetImageId("icons/s_" + sysName + ".png");
+        tex =  G_->GetResources()->GetImageId("icons/s_" + sysName + "_overlay.png");
+        this->iconPrimitive = G_->GetResources()->CreateImagePrimitive(tex, this->location.x - (tex->width_ / 2), this->location.y - (tex->height_ / 2), 0, COLOR_WHITE, 1.f, false);
+        tex =  G_->GetResources()->GetImageId("icons/s_" + sysName + "_overlay2.png");
+        this->iconBorderPrimitive = G_->GetResources()->CreateImagePrimitive(tex, this->location.x - (tex->width_ / 2), this->location.y - (tex->height_ / 2), 0, COLOR_WHITE, 1.f, false);
+
+        int i = 0;
+        while (i != 5)
+        {
+            switch (i)
+            {
+                case 0:
+                    color = "_green";
+                    break;
+                case 1:
+                    color = "_grey";
+                    break;
+                case 2:
+                    color = "_orange";
+                    break;
+                case 3:
+                    color = "_red";
+                    break;
+                case 4:
+                    color = "_blue";
+                    break;
+            }
+
+            // this->iconPrimitives is actually a [5][2][2] array instead of [20] - therefore this cast is needed
+            tex =  G_->GetResources()->GetImageId("icons/s_" + sysName + color + "1.png");
+            ((GL_Primitive* (*)[2][2])iconPrimitives)[i][0][0] = G_->GetResources()->CreateImagePrimitive(tex, 0, 0, 0, COLOR_WHITE, 1.f, false);
+            tex =  G_->GetResources()->GetImageId("icons/s_" + sysName + color + "2.png");
+            ((GL_Primitive* (*)[2][2])iconPrimitives)[i][1][0] = G_->GetResources()->CreateImagePrimitive(tex, 0, 0, 0, COLOR_WHITE, 1.f, false);
+            i++;
+        }
+    }
+}
+#endif
+
 HOOK_STATIC(ShipSystem, SystemIdToName, (int systemId) -> std::string)
 {
     LOG_HOOK("HOOK_STATIC -> ShipSystem::SystemIdToName -> Begin (CustomSystems.cpp)\n")
@@ -1855,6 +1920,7 @@ HOOK_METHOD(ShipManager, CloneHealing, () -> void)
     g_jumpClone = false;
 }
 
+// Inlined in ShipManager::Wait on linux
 HOOK_METHOD(CrewMember, DirectModifyHealth, (float heal) -> bool)
 {
     LOG_HOOK("HOOK_METHOD -> CrewMember::DirectModifyHealth -> Begin (CustomSystems.cpp)\n")

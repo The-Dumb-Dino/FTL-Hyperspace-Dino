@@ -194,7 +194,7 @@ target_compile_options(
 )
 
 if(APPLE)
-    target_compile_options(Hyperspace PRIVATE -std=c++14)
+    target_compile_options(Hyperspace PRIVATE -std=c++14 -Wno-deprecated-declarations)
 else()
     target_compile_options(Hyperspace PRIVATE -std=c++11)
 endif()

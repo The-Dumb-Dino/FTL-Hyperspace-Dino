@@ -1871,3 +1871,49 @@ HOOK_METHOD(ChoiceBox, OnRender, () -> void)
     Global::GetInstance()->getLuaContext()->getLibScript()->call_on_render_event_post_callbacks(RenderEvents::CHOICE_BOX, std::abs(idx), 1);
     lua_pop(context->GetLua(), 1);
 }
+
+/*
+// Might be usefull in the future
+bool Spreader_Fire::StartInRoom(int roomId, int count)
+{
+    Globals::Rect rect = ShipGraph::GetShipInfo(this->iShipId)->GetRoomShape(roomId);
+    Point grid = ShipGraph::TranslateToGrid(rect.x, rect.y);
+    int tilesToInflame = (rect.w / 35) * (rect.h / 35);
+    if (count <= tilesToInflame)
+    {
+        tilesToInflame = count;
+    }
+
+    int i = 0;
+    if (0 < tilesToInflame)
+    {
+        do
+        {
+            int rng_x;
+            int rng_y;
+            if (*Globals_RNG == false) // Begin: inline int Get(RandomNumberGenerator * this)
+            {
+                rng_x = random32();
+            }
+            else
+            {
+                rng_x = rand();
+            }
+        
+            if (*Globals_RNG == false) // Begin: inline int Get(RandomNumberGenerator * this)
+            {
+                rng_y = random32();
+            }
+            else
+            {
+                rng_y = rand();
+            }
+
+            i++;
+
+            this->StartInGrid(rng_x % (rect.w / 35) + grid.x, rng_y % (rect.h / 35) + grid.y);
+        } while (i != tilesToInflame);
+    }
+    return true;
+}
+*/
