@@ -61,7 +61,7 @@ cleanup __amd64 bool CrewMember::BadAtCombat(CrewMember *this);
 ".554889e54157415641554154534883ec184989ff488d05":
 cleanup __amd64 void CrewMember::destructor(CrewMember *this);
 "!.554889e553504889fbe812fd":
-cleanup __amd64 void CrewMember::Cleanup(CrewMember *this); 
+cleanup __amd64 void CrewMember::Cleanup(CrewMember *this); // I think thats the secondary destructor? doesnt really matter as it's unused. 
 ".8b97ac00000085d27878":
 cleanup __amd64 void CrewMember::EmptySlot(CrewMember *this);
 "!.554889e580bf600200000075":

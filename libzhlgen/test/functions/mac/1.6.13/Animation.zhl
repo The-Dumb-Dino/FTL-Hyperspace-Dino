@@ -1,7 +1,7 @@
 "554889e5415741564155415453504889fbf6":
 cleanup __amd64 void Animation::destructor(Animation *this);
 // GOG | Steam - different register save sequence after prologue
-"554889e54157415641554154534883ec384989fe41c74620|554889e54157415641554154534883ec3844894dd044":
+"!.554889e54157415641554154534883ec384989fe41c74620|!.554889e54157415641554154534883ec3844894dd044":
 cleanup __amd64 void Animation::constructor(Animation *this, const std::string& image, int length, float time, Pointf position, int imageWidth, int imageHeight, int stripStartX, int numFrames);
 "!.554889e54156534189f64889fb0fb673":
 cleanup __amd64 void Animation::SaveState(Animation *this, int fd);
@@ -21,7 +21,7 @@ cleanup __amd64 void Animation::Update(Animation *this);
 cleanup __amd64 int Animation::RandomStart(Animation *this);
 ".554889e548":
 cleanup __amd64 void Animation::SetAnimationId(Animation *this, GL_Texture* tex);
-"554889e5415741564154534883ec504889fb41b601":
+"!.554889e5415741564154534883ec504889fb41b601":
 cleanup __amd64 void Animation::OnRender(Animation *this, float opacity, GL_Color color, bool mirror);
 "!.85f6784f":
 cleanup __amd64 void Animation::AddSoundQueue(Animation *this, int frame, const std::string& sound);

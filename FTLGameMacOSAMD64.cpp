@@ -253,7 +253,7 @@ void Animation::destructor()
 namespace _func19
 {
     static void *func = 0;
-	static FunctionDefinition funcObj("Animation::constructor", typeid(void (Animation::*)(const std::string &, int , float , Pointf , int , int , int , int )), "554889e54157415641554154534883ec384989fe41c74620|554889e54157415641554154534883ec3844894dd044", nullptr, 0, 0, &func);
+	static FunctionDefinition funcObj("Animation::constructor", typeid(void (Animation::*)(const std::string &, int , float , Pointf , int , int , int , int )), "!.554889e54157415641554154534883ec384989fe41c74620|!.554889e54157415641554154534883ec3844894dd044", nullptr, 0, 0, &func);
 }
 
 void Animation::constructor(const std::string &image, int length, float time, Pointf position, int imageWidth, int imageHeight, int stripStartX, int numFrames)
@@ -383,7 +383,7 @@ void Animation::SetAnimationId(GL_Texture *tex)
 namespace _func29
 {
     static void *func = 0;
-	static FunctionDefinition funcObj("Animation::OnRender", typeid(void (Animation::*)(float , GL_Color , bool )), "554889e5415741564154534883ec504889fb41b601", nullptr, 0, 0, &func);
+	static FunctionDefinition funcObj("Animation::OnRender", typeid(void (Animation::*)(float , GL_Color , bool )), "!.554889e5415741564154534883ec504889fb41b601", nullptr, 0, 0, &func);
 }
 
 void Animation::OnRender(float opacity, GL_Color color, bool mirror)
@@ -3053,7 +3053,7 @@ void CachedImage::SetMirrored(bool mirrored)
 namespace _func246
 {
     static void *func = 0;
-	static FunctionDefinition funcObj("CachedImage::destructor", typeid(void (CachedImage::*)()), "554889e553504889fb488d05????????488903f64310017409488b7b20e8????????4889df4883c4", nullptr, 0, 0, &func);
+	static FunctionDefinition funcObj("CachedImage::destructor", typeid(void (CachedImage::*)()), "!.554889e553504889fb488d05????????488903f64310017409488b7b20e8????????4889df4883c4", nullptr, 0, 0, &func);
 }
 
 void CachedImage::destructor()
@@ -3079,7 +3079,7 @@ void CachedPrimitive::destructor()
 namespace _func248
 {
     static void *func = 0;
-	static FunctionDefinition funcObj("CachedPrimitive::OnRender", typeid(void (CachedPrimitive::*)(const GL_Color &)), "554889e54156534989f64889fb488b7b0848", nullptr, 0, 0, &func);
+	static FunctionDefinition funcObj("CachedPrimitive::OnRender", typeid(void (CachedPrimitive::*)(const GL_Color &)), "!.554889e54156534989f64889fb488b7b0848", nullptr, 0, 0, &func);
 }
 
 void CachedPrimitive::OnRender(const GL_Color &color)
@@ -11589,7 +11589,7 @@ int ResourceControl::RenderImageString(std::string &tex, int x, int y, int rotat
 namespace _func925
 {
     static void *func = 0;
-	static FunctionDefinition funcObj("ResourceControl::CreateImagePrimitive", typeid(GL_Primitive *(ResourceControl::*)(GL_Texture *, int , int , int , GL_Color , float , bool )), "554889e50f28f20f28e84885f674220f57c0", nullptr, 0, 0, &func);
+	static FunctionDefinition funcObj("ResourceControl::CreateImagePrimitive", typeid(GL_Primitive *(ResourceControl::*)(GL_Texture *, int , int , int , GL_Color , float , bool )), "!.554889e50f", nullptr, 0, 0, &func);
 }
 
 GL_Primitive *ResourceControl::CreateImagePrimitive(GL_Texture *image, int x, int y, int rotation, GL_Color color, float alpha, bool mirror)
