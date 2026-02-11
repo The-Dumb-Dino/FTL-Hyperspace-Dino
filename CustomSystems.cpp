@@ -452,10 +452,10 @@ HOOK_METHOD(ShipSystem, constructor, (int systemId, int roomId, int shipId, int 
 HOOK_METHOD_PRIORITY(ShipManager, CreateSystems, 9999, () -> int)
 {
     LOG_HOOK("HOOK_METHOD_PRIORITY -> ShipManager::CreateSystems -> Begin (CustomSystems.cpp)\n")
+
     if (myBlueprint.systemInfo.find(0) != myBlueprint.systemInfo.end())
     {
         auto shieldInfo = myBlueprint.systemInfo[0];
-
 
         auto sys = new Shields(shieldInfo.location[0], iShipId, 0, myBlueprint.shieldFile);
         shieldSystem = sys;
@@ -1831,8 +1831,9 @@ HOOK_METHOD_PRIORITY(ShipManager, JumpArrive, 9999, () -> void)
         crew->Jump();
     }
 
-    // Jump update for the shield system
-    if (this->shieldSystem)
+    // Jump update for the shield system (check systemKey, not just pointer - shields object
+    // may exist from systemInfo even when start="false" but not be properly initialized)
+    if (this->systemKey[SYS_SHIELDS] != -1 && this->shieldSystem)
     {
         this->shieldSystem->Jump();
     }
@@ -1860,7 +1861,7 @@ HOOK_METHOD_PRIORITY(ShipManager, JumpArrive, 9999, () -> void)
         }
         if (this->systemKey[SYS_ENGINES] != -1)
         {
-            this->vSystemList[SYS_ENGINES]->LockSystem(0);
+            this->vSystemList[this->systemKey[SYS_ENGINES]]->LockSystem(0);
         }
         if (this->systemKey[SYS_WEAPONS] != -1)
         {
@@ -1868,7 +1869,7 @@ HOOK_METHOD_PRIORITY(ShipManager, JumpArrive, 9999, () -> void)
         }
         if (this->systemKey[SYS_PILOT] != -1)
         {
-            this->vSystemList[SYS_PILOT]->LockSystem(0);
+            this->vSystemList[this->systemKey[SYS_PILOT]]->LockSystem(0);
         }
     }
     // Set current beacon as unsafe by default
