@@ -2,7 +2,7 @@
 noHook __amd64 void StatusEffect::NoHook1();
 "!.554889e58a05??????0084":
 noHook __amd64 void StatusEffect::NoHook2(); // StatusEffect::GetStormEffect
-".55":
+".554889e5":
 static cleanup __amd64 StatusEffect StatusEffect::GetNebulaEffect();
 
 

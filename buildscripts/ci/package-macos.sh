@@ -21,7 +21,7 @@ mkdir -p build-package-macos/MacOS
 
 # Copy Release Files structure
 cp -r "Release Files/MacOS/"* build-package-macos/MacOS/ 2>/dev/null || true
-cp "Release Files/README.txt" build-package-macos/
+mv "build-package-macos/MacOS/README.txt" build-package-macos/
 
 # Package Hyperspace.ftl from Mod Files
 cd "Mod Files"

@@ -21,7 +21,7 @@ mkdir -p build-package-linux/Linux
 
 # Copy Release Files structure
 cp -r "Release Files/Linux/"* build-package-linux/Linux/
-cp "Release Files/README.txt" build-package-linux/
+mv "build-package-linux/Linux/README.txt" build-package-linux/
 
 # Package Hyperspace.ftl from Mod Files
 cd "Mod Files"

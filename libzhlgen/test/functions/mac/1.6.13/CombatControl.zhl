@@ -1,4 +1,4 @@
-"554889e54157415641554154534881eca80000004889fb":
+"554889e54157415641554154534881ec??000000??89????8d??10":
 cleanup __amd64 void CombatControl::constructor(CombatControl *this);
 ".554889e5488b87100900004885c07406":
 cleanup __amd64 ShipManager* CombatControl::GetCurrentTarget(CombatControl *this);

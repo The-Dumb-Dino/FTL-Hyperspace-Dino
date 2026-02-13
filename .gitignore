@@ -66,3 +66,8 @@ build-*/
 /vcpkg
 
 .vscode/settings.json
+
+test_results/
+
+# Test environment (user-specific)
+tests/.test.env

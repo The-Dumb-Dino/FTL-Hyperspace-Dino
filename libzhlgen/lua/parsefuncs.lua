@@ -1032,9 +1032,15 @@ end
 ---------------------------------------------------------------
 -- Functions
 
+local generatedFileComment = [[// GENERATED CODE - DO NOT MODIFY BY HAND
+// To regenerate, run: ./libzhlgen/parsefuncs.sh
+
+]]
+
 local function writeFunctionWrappers(funcs, out)
     local name_h = outputH:match("([^/\\]+)$")
-    
+
+    out(generatedFileComment)
     out([[#include "%s"
 #include "zhl_internal.h"
 
@@ -1495,6 +1501,7 @@ local datestr = os.date()
 
 -- .h
 local f = fileWriter(outputH)
+f(generatedFileComment)
 f([[#pragma once
 
 #pragma warning( disable : 4722 )

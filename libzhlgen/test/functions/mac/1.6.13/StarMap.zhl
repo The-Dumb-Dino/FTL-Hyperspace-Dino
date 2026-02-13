@@ -25,11 +25,12 @@ cleanup __amd64 void StarMap::GenerateSectorMap(StarMap *this);
 cleanup __amd64 void StarMap::UpdateSectorMap(StarMap *this, Sector* fakeCurrent);
 "!.55":
 cleanup __amd64 void StarMap::StartSecretSector(StarMap *this);
-"!.55":
+"554889e54156534889fb488b83e8080000488b8bf0080000":
 cleanup __amd64 void StarMap::SelectNewSector(StarMap *this, int choice);
-"!.55":
+// GOG | Steam - different stack allocation
+"554889e5415741564155415453504989fe498b86e8080000|554889e54157415641554154534883ec504989fe498b86e8080000":
 cleanup __amd64 void StarMap::PushSectorColumn(StarMap *this);
-"!.5548":
+"554889e54157415653504989f7????????????????498b4708":
 cleanup __amd64 void StarMap::ReachSector(StarMap *this, Sector* sector);
 "!.55":
 cleanup __amd64 void StarMap::RenderSectorName(StarMap *this, Sector* sector, GL_Color color);

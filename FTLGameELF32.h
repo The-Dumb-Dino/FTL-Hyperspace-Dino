@@ -1,3 +1,6 @@
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// To regenerate, run: ./libzhlgen/parsefuncs.sh
+
 #pragma once
 
 #pragma warning( disable : 4722 )

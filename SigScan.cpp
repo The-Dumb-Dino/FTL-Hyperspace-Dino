@@ -43,6 +43,7 @@ SigScan::SigScan(const char *sig) : m_pAddress(0)
 {
 	m_bStartFromLastAddress = false;
 	m_bNoReturnSeek = false;
+	m_alternative = nullptr;
 	m_dist = 0;
 	// Default signature if nothing was specified
 	if(!sig || !sig[0])
@@ -66,7 +67,7 @@ SigScan::SigScan(const char *sig) : m_pAddress(0)
 	}
 
 	int len = 0;
-	for(const char *p = sig ; *p ; ++p)
+	for(const char *p = sig ; *p && *p != '|' ; ++p)
 	{
 		char c = *p;
 		len += ((c>='a' && c<='f') || (c>='A' && c<='F') || (c>='0' && c<='9') || c=='?');
@@ -97,6 +98,12 @@ SigScan::SigScan(const char *sig) : m_pAddress(0)
 		{
 			m_bNoReturnSeek = true;
 			continue;
+		}
+
+		if(c == '|')
+		{
+			m_alternative = p + 1;  // Store pattern after |
+			break;
 		}
 
 		if(c == '(')
@@ -221,6 +228,19 @@ bool SigScan::Scan(Callback callback)
 			s_lastMatches() = m_matches;
 
 			if(callback) callback(this);
+			return true;
+		}
+	}
+
+	// Try alternative pattern if first one failed
+	if(m_alternative && m_alternative[0])
+	{
+		SigScan alt(m_alternative);
+		if(alt.Scan(callback))
+		{
+			m_pAddress = alt.m_pAddress;
+			m_dist = alt.m_dist;
+			m_matches = alt.m_matches;
 			return true;
 		}
 	}

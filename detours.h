@@ -62,14 +62,17 @@
 #  define MOLOGIE_DETOURS_MEMORY_REPROTECT(ADDRESS, SIZE, OLDPROT) MOLOGIE_DETOURS_MEMORY_POSIX_PAGEPROTECT((ADDRESS), (SIZE), PROT_READ | PROT_WRITE | PROT_EXEC)
 #  define MOLOGIE_DETOURS_MEMORY_WINDOWS_INIT(NAME)
 #endif
+
+#ifdef __APPLE__
+// Simple mprotect wrapper for macOS. Fixes code signature issues on macOS Big Sur and later.
+#  define MOLOGIE_DETOURS_MEMORY_SIMPLE_PROTECT(ADDRESS, SIZE, NEWPROT) (mprotect((void*)(ADDRESS), (SIZE), (NEWPROT)) == 0)
+#endif
+
 #ifdef __i386__
 #define MOLOGIE_DETOURS_DETOUR_SIZE (1 + sizeof(void*))
 #elif defined(__amd64__)
 #define MOLOGIE_DETOURS_DETOUR_SIZE 5
 #endif // __arch__
-#if defined(__APPLE__)
-#  define MOLOGIE_DETOURS_MEMORY_SIMPLE_PROTECT(ADDRESS, SIZE, NEWPROT) (mprotect((void*)(ADDRESS), (SIZE), (NEWPROT)) == 0)
-#endif
 
 /**
  * @namespace	MologieDetours
@@ -402,8 +405,12 @@ namespace MologieDetours
 			// Backup the original code
 			// Add 5 bytes of space to shove an extra jmp if we need to rewrite a single jmp/jcc + imm8 (note: supporting more would require many changes to generate line-by-line instead of just memcpy the code)
 			#ifdef __APPLE__
-			backupOriginalCode_ = reinterpret_cast<uint8_t*>(mmap(nullptr, (instructionCount_ + MOLOGIE_DETOURS_DETOUR_SIZE + 5), PROT_READ | PROT_WRITE, MAP_ANON | MAP_PRIVATE, -1, 0));
-			#else 
+			size_t backupSize = instructionCount_ + MOLOGIE_DETOURS_DETOUR_SIZE + 5;
+			backupOriginalCode_ = static_cast<uint8_t*>(mmap(nullptr, backupSize, PROT_READ | PROT_WRITE, MAP_ANON | MAP_PRIVATE, -1, 0));
+			if (backupOriginalCode_ == MAP_FAILED) {
+				throw DetourPageProtectionException("Failed to allocate memory for original code backup", nullptr);
+			}
+			#else
 			backupOriginalCode_ = new uint8_t[instructionCount_ + MOLOGIE_DETOURS_DETOUR_SIZE + 5];
 			#endif
 
@@ -419,11 +426,9 @@ namespace MologieDetours
             uint32_t originalCodeJmpBackOffset = (uint32_t) (reinterpret_cast<address_type>(pSource_) + instructionCount_ - reinterpret_cast<address_type>(jmpBack) - MOLOGIE_DETOURS_DETOUR_SIZE);
 			*reinterpret_cast<uint32_t*>(jmpBack + 1) = originalCodeJmpBackOffset;
 
-			// Make backupOriginalCode_ executable
+			// Make backupOriginalCode_ executable (W^X: change from RW to RX)
 			#ifdef __APPLE__
-			// TODO: REMOVE - This approach is not correct and must be replaced when I eventually figure out why it doesn't work normally
-			// Use simple mprotect wrapper for macOS with READ & EXEC permissions
-			if(!MOLOGIE_DETOURS_MEMORY_SIMPLE_PROTECT(backupOriginalCode_, instructionCount_ + MOLOGIE_DETOURS_DETOUR_SIZE + 5, PROT_READ | PROT_EXEC))
+			if(!MOLOGIE_DETOURS_MEMORY_SIMPLE_PROTECT(backupOriginalCode_, backupSize, PROT_READ | PROT_EXEC))
 			{
 				throw DetourPageProtectionException("Failed to make copy of original code executable", backupOriginalCode_);
 			}
@@ -442,7 +447,11 @@ namespace MologieDetours
 			#elif defined(__amd64__)
 			// TODO: Add code to check upper 32-bits of trampoline & detour to see if they are the same, if they are you can perform an E9 relative jmp like above. If not this absolute jump still works, just the CPU hates you.
 			#ifdef __APPLE__
-			trampoline_ = reinterpret_cast<uint8_t*>(mmap(nullptr, 12, PROT_READ | PROT_WRITE, MAP_ANON | MAP_PRIVATE, -1, 0));
+			size_t trampolineSize = 12;
+			trampoline_ = static_cast<uint8_t*>(mmap(nullptr, trampolineSize, PROT_READ | PROT_WRITE, MAP_ANON | MAP_PRIVATE, -1, 0));
+			if (trampoline_ == MAP_FAILED) {
+				throw DetourPageProtectionException("Failed to allocate memory for trampoline", nullptr);
+			}
 			#else
 			trampoline_ = new uint8_t[12];
 			#endif
@@ -452,11 +461,18 @@ namespace MologieDetours
 			trampoline_[10] = 0xFF; trampoline_[11] = 0xE0; // jmp RAX
 			#endif // __arch__
 
-			// Make trampoline_ executable
+			// Make trampoline_ executable (W^X: change from RW to RX)
+			#if defined(__APPLE__) && defined(__amd64__)
+			if(!MOLOGIE_DETOURS_MEMORY_SIMPLE_PROTECT(trampoline_, trampolineSize, PROT_READ | PROT_EXEC))
+			{
+				throw DetourPageProtectionException("Failed to make trampoline executable", trampoline_);
+			}
+			#else
 			if(!MOLOGIE_DETOURS_MEMORY_UNPROTECT(trampoline_, MOLOGIE_DETOURS_DETOUR_SIZE, dwProt))
 			{
 				throw DetourPageProtectionException("Failed to make trampoline executable", trampoline_);
 			}
+			#endif
 
 			// Unprotect original function
 			if(!MOLOGIE_DETOURS_MEMORY_UNPROTECT(targetFunction, MOLOGIE_DETOURS_DETOUR_SIZE, dwProt))

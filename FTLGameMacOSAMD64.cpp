@@ -1,3 +1,6 @@
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// To regenerate, run: ./libzhlgen/parsefuncs.sh
+
 #include "FTLGameMacOSAMD64.h"
 #include "zhl_internal.h"
 
@@ -250,7 +253,7 @@ void Animation::destructor()
 namespace _func19
 {
     static void *func = 0;
-	static FunctionDefinition funcObj("Animation::constructor", typeid(void (Animation::*)(const std::string &, int , float , Pointf , int , int , int , int )), "!.554889e54157415641554154534883ec38??89", nullptr, 0, 0, &func);
+	static FunctionDefinition funcObj("Animation::constructor", typeid(void (Animation::*)(const std::string &, int , float , Pointf , int , int , int , int )), "!.554889e54157415641554154534883ec384989fe41c74620|!.554889e54157415641554154534883ec3844894dd044", nullptr, 0, 0, &func);
 }
 
 void Animation::constructor(const std::string &image, int length, float time, Pointf position, int imageWidth, int imageHeight, int stripStartX, int numFrames)
@@ -380,7 +383,7 @@ void Animation::SetAnimationId(GL_Texture *tex)
 namespace _func29
 {
     static void *func = 0;
-	static FunctionDefinition funcObj("Animation::OnRender", typeid(void (Animation::*)(float , GL_Color , bool )), "!.554889e541", nullptr, 0, 0, &func);
+	static FunctionDefinition funcObj("Animation::OnRender", typeid(void (Animation::*)(float , GL_Color , bool )), "!.554889e5415741564154534883ec504889fb41b601", nullptr, 0, 0, &func);
 }
 
 void Animation::OnRender(float opacity, GL_Color color, bool mirror)
@@ -452,7 +455,7 @@ float AnimationTracker::Progress(float speed)
 namespace _func35
 {
     static void *func = 0;
-	static FunctionDefinition funcObj("AnimationTracker::SetLoop", typeid(void (AnimationTracker::*)(bool , float )), ".554889e54088770c", nullptr, 0, 0, &func);
+	static FunctionDefinition funcObj("AnimationTracker::SetLoop", typeid(void (AnimationTracker::*)(bool , float )), "554889e54088770cf30f114718c7471c00000000", nullptr, 0, 0, &func);
 }
 
 void AnimationTracker::SetLoop(bool loop, float loopDelay)
@@ -1624,7 +1627,7 @@ void Button::constructor()
 namespace _func131
 {
     static void *func = 0;
-	static FunctionDefinition funcObj("Button::OnInit", typeid(void (Button::*)(const std::string &, Point )), ".554889e54157415641554154534883ec184989d6", nullptr, 0, 0, &func);
+	static FunctionDefinition funcObj("Button::OnInit", typeid(void (Button::*)(const std::string &, Point )), "554889e54157415641554154534883ec184989d64989f74889fb488d15", nullptr, 0, 0, &func);
 }
 
 void Button::OnInit(const std::string &img, Point position)
@@ -1650,7 +1653,7 @@ void Button::SetImageBase(const std::string &imageBase)
 namespace _func133
 {
     static void *func = 0;
-	static FunctionDefinition funcObj("Button::SetInactiveImage", typeid(void (Button::*)(GL_Texture *)), ".554889e548397750", nullptr, 0, 0, &func);
+	static FunctionDefinition funcObj("Button::SetInactiveImage", typeid(void (Button::*)(GL_Texture *)), "554889e548397750740b48897750488b07", nullptr, 0, 0, &func);
 }
 
 void Button::SetInactiveImage(GL_Texture *texture)
@@ -2631,7 +2634,7 @@ bool CSurface::GL_DrawShield(int x, int y, float a1, float b1, int angle1, int a
 namespace _func210
 {
     static void *func = 0;
-	static FunctionDefinition funcObj("CSurface::NoHook", typeid(void (CSurface::*)()), "!.415f5dc3", nullptr, 0, 0, &func);
+	static FunctionDefinition funcObj("CSurface::DO_NOT_HOOK", typeid(void (CSurface::*)()), "!.415f5dc3", nullptr, 0, 0, &func);
 }
 
 namespace _func211
@@ -2669,7 +2672,7 @@ bool CSurface::GL_BlitPixelImage(GL_Texture *tex, float x, float y, float x2, fl
 namespace _func214
 {
     static void *func = 0;
-	static FunctionDefinition funcObj("CSurface::GL_BlitImagePartial", typeid(bool (*)(GL_Texture *, float , float , float , float , float , float , float , float , float , GL_Color , bool )), ".0f1f", nullptr, 0, 0, &func);
+	static FunctionDefinition funcObj("CSurface::GL_BlitImagePartial", typeid(bool (*)(GL_Texture *, float , float , float , float , float , float , float , float , float , GL_Color , bool )), "440f28c485f67504440f28c5554889e5|4084f6440f28c47504440f28c5554889e5", nullptr, 0, 0, &func);
 }
 
 bool CSurface::GL_BlitImagePartial(GL_Texture *tex, float x, float y, float size_x, float size_y, float start_x, float end_x, float start_y, float end_y, float alpha, GL_Color color, bool mirror)
@@ -3050,7 +3053,7 @@ void CachedImage::SetMirrored(bool mirrored)
 namespace _func246
 {
     static void *func = 0;
-	static FunctionDefinition funcObj("CachedImage::destructor", typeid(void (CachedImage::*)()), "!.554889e553504889fb", nullptr, 0, 0, &func);
+	static FunctionDefinition funcObj("CachedImage::destructor", typeid(void (CachedImage::*)()), "!.554889e553504889fb488d05????????488903f64310017409488b7b20e8????????4889df4883c4", nullptr, 0, 0, &func);
 }
 
 void CachedImage::destructor()
@@ -3076,7 +3079,7 @@ void CachedPrimitive::destructor()
 namespace _func248
 {
     static void *func = 0;
-	static FunctionDefinition funcObj("CachedPrimitive::OnRender", typeid(void (CachedPrimitive::*)(const GL_Color &)), "!.554889e54156", nullptr, 0, 0, &func);
+	static FunctionDefinition funcObj("CachedPrimitive::OnRender", typeid(void (CachedPrimitive::*)(const GL_Color &)), "!.554889e54156534989f64889fb488b7b0848", nullptr, 0, 0, &func);
 }
 
 void CachedPrimitive::OnRender(const GL_Color &color)
@@ -3407,7 +3410,7 @@ int CombatAI::PrioritizeSystem(int weaponType)
 namespace _func274
 {
     static void *func = 0;
-	static FunctionDefinition funcObj("CombatControl::constructor", typeid(void (CombatControl::*)()), "554889e54157415641554154534881eca80000004889fb", nullptr, 0, 0, &func);
+	static FunctionDefinition funcObj("CombatControl::constructor", typeid(void (CombatControl::*)()), "554889e54157415641554154534881ec??000000??89????8d??10", nullptr, 0, 0, &func);
 }
 
 void CombatControl::constructor()
@@ -5588,7 +5591,7 @@ void CrewManifest::MouseClick(int mX, int mY)
 namespace _func445
 {
     static void *func = 0;
-	static FunctionDefinition funcObj("CrewManifest::Update", typeid(void (CrewManifest::*)()), ".554889e541574156534883ec584989fe0f", nullptr, 0, 0, &func);
+	static FunctionDefinition funcObj("CrewManifest::Update", typeid(void (CrewManifest::*)()), ".554889e541574156534883ec??4989fe0f", nullptr, 0, 0, &func);
 }
 
 void CrewManifest::Update()
@@ -11560,7 +11563,7 @@ bool ResourceControl::ImageExists(const std::string &name)
 namespace _func923
 {
     static void *func = 0;
-	static FunctionDefinition funcObj("ResourceControl::RenderImage", typeid(void (ResourceControl::*)(GL_Texture *, int , int , int , GL_Color , float , bool )), ".0f28", nullptr, 0, 0, &func);
+	static FunctionDefinition funcObj("ResourceControl::RenderImage", typeid(void (ResourceControl::*)(GL_Texture *, int , int , int , GL_Color , float , bool )), "0f28f20f28e84885f674500f57c0f30f2ac2", nullptr, 0, 0, &func);
 }
 
 void ResourceControl::RenderImage(GL_Texture *tex, int x, int y, int rotation, GL_Color color, float opacity, bool mirror)
@@ -11586,7 +11589,7 @@ int ResourceControl::RenderImageString(std::string &tex, int x, int y, int rotat
 namespace _func925
 {
     static void *func = 0;
-	static FunctionDefinition funcObj("ResourceControl::CreateImagePrimitive", typeid(GL_Primitive *(ResourceControl::*)(GL_Texture *, int , int , int , GL_Color , float , bool )), "!.554889e50f28f20f", nullptr, 0, 0, &func);
+	static FunctionDefinition funcObj("ResourceControl::CreateImagePrimitive", typeid(GL_Primitive *(ResourceControl::*)(GL_Texture *, int , int , int , GL_Color , float , bool )), "!.554889e50f", nullptr, 0, 0, &func);
 }
 
 GL_Primitive *ResourceControl::CreateImagePrimitive(GL_Texture *image, int x, int y, int rotation, GL_Color color, float alpha, bool mirror)
@@ -13829,7 +13832,7 @@ int ShipManager::GetSystemRoom(int sysId)
 namespace _func1103
 {
     static void *func = 0;
-	static FunctionDefinition funcObj("ShipManager::AddCrewMemberFromBlueprint", typeid(CrewMember *(ShipManager::*)(CrewBlueprint *, int , bool , int , bool )), ".55", nullptr, 0, 0, &func);
+	static FunctionDefinition funcObj("ShipManager::AddCrewMemberFromBlueprint", typeid(CrewMember *(ShipManager::*)(CrewBlueprint *, int , bool , int , bool )), "554889e54157415641554154534881eca800000044894dd0448945c8894dcc4189d64889f34989ff", nullptr, 0, 0, &func);
 }
 
 CrewMember *ShipManager::AddCrewMemberFromBlueprint(CrewBlueprint *bp, int slot, bool init, int roomId, bool intruder)
@@ -13972,7 +13975,7 @@ CrewMember *ShipManager::GetCrewmember(int slot, bool present)
 namespace _func1114
 {
     static void *func = 0;
-	static FunctionDefinition funcObj("ShipManager::RemoveCrewmember", typeid(void (ShipManager::*)(CrewMember *)), "!.5548", nullptr, 0, 0, &func);
+	static FunctionDefinition funcObj("ShipManager::RemoveCrewmember", typeid(void (ShipManager::*)(CrewMember *)), "554889e54156534989fe498b86c0000000", nullptr, 0, 0, &func);
 }
 
 void ShipManager::RemoveCrewmember(CrewMember *crew)
@@ -16462,7 +16465,7 @@ void SpaceManager::SetStorm(bool state)
 namespace _func1315
 {
     static void *func = 0;
-	static FunctionDefinition funcObj("SpaceManager::SetNebula", typeid(void (SpaceManager::*)(bool )), ".55", nullptr, 0, 0, &func);
+	static FunctionDefinition funcObj("SpaceManager::SetNebula", typeid(void (SpaceManager::*)(bool )), "554889e54157415641554154534881eca80000004989fe4188b629040000", nullptr, 0, 0, &func);
 }
 
 void SpaceManager::SetNebula(bool state)
@@ -17047,7 +17050,7 @@ void StarMap::StartSecretSector()
 namespace _func1360
 {
     static void *func = 0;
-	static FunctionDefinition funcObj("StarMap::SelectNewSector", typeid(void (StarMap::*)(int )), "!.55", nullptr, 0, 0, &func);
+	static FunctionDefinition funcObj("StarMap::SelectNewSector", typeid(void (StarMap::*)(int )), "554889e54156534889fb488b83e8080000488b8bf0080000", nullptr, 0, 0, &func);
 }
 
 void StarMap::SelectNewSector(int choice)
@@ -17060,7 +17063,7 @@ void StarMap::SelectNewSector(int choice)
 namespace _func1361
 {
     static void *func = 0;
-	static FunctionDefinition funcObj("StarMap::PushSectorColumn", typeid(void (StarMap::*)()), "!.55", nullptr, 0, 0, &func);
+	static FunctionDefinition funcObj("StarMap::PushSectorColumn", typeid(void (StarMap::*)()), "554889e5415741564155415453504989fe498b86e8080000|554889e54157415641554154534883ec504989fe498b86e8080000", nullptr, 0, 0, &func);
 }
 
 void StarMap::PushSectorColumn()
@@ -17073,7 +17076,7 @@ void StarMap::PushSectorColumn()
 namespace _func1362
 {
     static void *func = 0;
-	static FunctionDefinition funcObj("StarMap::ReachSector", typeid(void (StarMap::*)(Sector *)), "!.5548", nullptr, 0, 0, &func);
+	static FunctionDefinition funcObj("StarMap::ReachSector", typeid(void (StarMap::*)(Sector *)), "554889e54157415653504989f7????????????????498b4708", nullptr, 0, 0, &func);
 }
 
 void StarMap::ReachSector(Sector *sector)
@@ -17787,7 +17790,7 @@ namespace _func1417
 namespace _func1418
 {
     static void *func = 0;
-	static FunctionDefinition funcObj("StatusEffect::GetNebulaEffect", typeid(StatusEffect (*)()), ".55", nullptr, 0, 0, &func);
+	static FunctionDefinition funcObj("StatusEffect::GetNebulaEffect", typeid(StatusEffect (*)()), ".554889e5", nullptr, 0, 0, &func);
 }
 
 StatusEffect StatusEffect::GetNebulaEffect()
@@ -18625,7 +18628,7 @@ void TeleportSystem::constructor(int _systemId, int _roomId, int _shipId, int _s
 namespace _func1485
 {
     static void *func = 0;
-	static FunctionDefinition funcObj("TeleportSystem::OnLoop", typeid(void (TeleportSystem::*)()), "!.55", nullptr, 0, 0, &func);
+	static FunctionDefinition funcObj("TeleportSystem::OnLoop", typeid(void (TeleportSystem::*)()), "!.554889e5415653488", nullptr, 0, 0, &func);
 }
 
 void TeleportSystem::OnLoop()
@@ -18638,7 +18641,7 @@ void TeleportSystem::OnLoop()
 namespace _func1486
 {
     static void *func = 0;
-	static FunctionDefinition funcObj("TeleportSystem::GetArmed", typeid(int (TeleportSystem::*)()), "!.55", nullptr, 0, 0, &func);
+	static FunctionDefinition funcObj("TeleportSystem::GetArmed", typeid(int (TeleportSystem::*)()), "!.554889e58b876c02", nullptr, 0, 0, &func);
 }
 
 int TeleportSystem::GetArmed()
@@ -18651,7 +18654,7 @@ int TeleportSystem::GetArmed()
 namespace _func1487
 {
     static void *func = 0;
-	static FunctionDefinition funcObj("TeleportSystem::SetArmed", typeid(void (TeleportSystem::*)(int )), ".55", nullptr, 0, 0, &func);
+	static FunctionDefinition funcObj("TeleportSystem::SetArmed", typeid(void (TeleportSystem::*)(int )), "554889e54156534889fb4531f683fe027439|554889e553504889fb83fe027431", nullptr, 0, 0, &func);
 }
 
 void TeleportSystem::SetArmed(int val)
@@ -20015,7 +20018,7 @@ void WeaponAnimation::RenderChargeBar(float alpha)
 namespace _func1594
 {
     static void *func = 0;
-	static FunctionDefinition funcObj("WeaponBlueprint::GetDescription", typeid(std::string (WeaponBlueprint::*)(bool )), "!.554889e54157415641554154534881ec????????8995????????4889f3", nullptr, 0, 0, &func);
+	static FunctionDefinition funcObj("WeaponBlueprint::GetDescription", typeid(std::string (WeaponBlueprint::*)(bool )), "554889e54157415641554154534881ec68010000488b05????????488b00488945d089|554889e54157415641554154534881ec680100008995", nullptr, 0, 0, &func);
 }
 
 std::string WeaponBlueprint::GetDescription(bool tooltip)
@@ -20975,7 +20978,7 @@ namespace _var1670
 namespace _func1671
 {
     static void *func = 0;
-	static FunctionDefinition funcObj("font_height", typeid(float (*)(int , float )), ".554889e5535085ff", nullptr, 0, 0, &func);
+	static FunctionDefinition funcObj("font_height", typeid(float (*)(int , float )), ".554889e55350??????????7e74", nullptr, 0, 0, &func);
 }
 
 float __stdcall font_height(int font_id, float size)
@@ -20988,7 +20991,7 @@ float __stdcall font_height(int font_id, float size)
 namespace _func1672
 {
     static void *func = 0;
-	static FunctionDefinition funcObj("font_baseline", typeid(float (*)(int , float )), ".554889e5535085ff", nullptr, 0, 0, &func);
+	static FunctionDefinition funcObj("font_baseline", typeid(float (*)(int , float )), ".554889e55350??????????7e74", nullptr, 0, 0, &func);
 }
 
 float __stdcall font_baseline(int font_id, float size)
