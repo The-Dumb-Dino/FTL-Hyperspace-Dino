@@ -3,6 +3,7 @@
 #include "ScenarioRegistry.h"
 #include "../game_access/State.h"
 #include "../../../Global.h"
+#include <algorithm>
 
 namespace TestFramework
 {
@@ -53,11 +54,47 @@ namespace TestFramework
         tests.push_back({name, func, scenarioName, scenarioParams});
     }
 
-    void Registry::startTests()
+    void Registry::startTests(const std::string& testNameFilter)
     {
         hs_log_file("\n========================================\n");
         hs_log_file("  STARTING TEST SUITE\n");
-        hs_log_file(("  Tests: " + std::to_string(tests.size()) + "\n").c_str());
+
+        if (!testNameFilter.empty())
+        {
+            hs_log_file(("  Mode: Single Test (" + testNameFilter + ")\n").c_str());
+
+            // Filter tests to only include the requested test
+            auto it = std::find_if(tests.begin(), tests.end(),
+                [&testNameFilter](const TestInfo& test) {
+                    return test.name == testNameFilter;
+                });
+
+            if (it != tests.end())
+            {
+                // Keep only the matching test
+                TestInfo matchedTest = *it;
+                tests.clear();
+                tests.push_back(matchedTest);
+                hs_log_file("  Tests: 1 (found)\n");
+            }
+            else
+            {
+                hs_log_file(("  ERROR: Test '" + testNameFilter + "' not found!\n").c_str());
+                hs_log_file("  Available tests:\n");
+                for (const auto& test : tests)
+                {
+                    hs_log_file(("    - " + test.name + "\n").c_str());
+                }
+                tests.clear();  // Clear all tests so nothing runs
+                hs_log_file("  Tests: 0 (no match)\n");
+            }
+        }
+        else
+        {
+            hs_log_file("  Mode: Full Suite\n");
+            hs_log_file(("  Tests: " + std::to_string(tests.size()) + "\n").c_str());
+        }
+
         hs_log_file("========================================\n\n");
 
         state = State::INITIALIZING_TEST;

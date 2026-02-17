@@ -27,7 +27,14 @@ static bool initAutoTest()
     return envVar != nullptr && std::string(envVar) == "1";
 }
 
+static std::string initTestName()
+{
+    const char* envVar = std::getenv("HYPERSPACE_TEST_NAME");
+    return envVar != nullptr ? std::string(envVar) : "";
+}
+
 static const bool ENABLE_AUTO_TEST = initAutoTest();
+static const std::string TEST_NAME_FILTER = initTestName();
 
 // ============================================
 // TEST STATE
@@ -45,8 +52,16 @@ void StartAllTests()
 {
     if (testsComplete) return;
 
-    hs_log_file("[TEST] Starting all tests asynchronously...\n");
-    TestFramework::Registry::getInstance().startTests();
+    if (!TEST_NAME_FILTER.empty())
+    {
+        hs_log_file(("[TEST] Starting single test: " + TEST_NAME_FILTER + "\n").c_str());
+    }
+    else
+    {
+        hs_log_file("[TEST] Starting all tests asynchronously...\n");
+    }
+
+    TestFramework::Registry::getInstance().startTests(TEST_NAME_FILTER);
 }
 
 // ============================================

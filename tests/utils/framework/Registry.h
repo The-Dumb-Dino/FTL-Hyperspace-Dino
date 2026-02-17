@@ -36,8 +36,8 @@ namespace TestFramework
         // Register a test
         void registerTest(const std::string& name, TestFunc func, const std::string& scenarioName, const ScenarioParams& scenarioParams = ScenarioParams());
 
-        // Start executing all registered tests
-        void startTests();
+        // Start executing all registered tests (optionally filter by test name)
+        void startTests(const std::string& testNameFilter = "");
 
         // Tick test execution (call every frame)
         void tick();
