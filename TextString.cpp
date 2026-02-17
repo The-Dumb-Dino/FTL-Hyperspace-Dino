@@ -1,6 +1,6 @@
-#if defined (__APPLE__)
 #include "Global.h"
 
+#if defined (__APPLE__)
 std::string TextString::GetText()
 {
     if (!this->isLiteral)
@@ -13,3 +13,8 @@ std::string TextString::GetText()
     }
 }
 #endif
+
+void TextString::operator+=(const std::string &other)
+{
+    this->data = GetText() + other;
+}

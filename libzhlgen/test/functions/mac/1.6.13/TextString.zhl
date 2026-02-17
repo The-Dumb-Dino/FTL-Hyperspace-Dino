@@ -16,4 +16,6 @@ struct TextString depends (TextLibrary)
 	}
 
 	std::string GetText();
+
+	void operator+=(const std::string &other);
 }};

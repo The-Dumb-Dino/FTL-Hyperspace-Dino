@@ -2,6 +2,8 @@
 cleanup __cdecl void WorldManager::constructor(WorldManager *this);
 "57565383ec108b5c24208d7308893424":
 cleanup __cdecl int WorldManager::OnInit(WorldManager *this);
+".55":
+cleanup __cdecl int WorldManager::PossibleDamage(WorldManager *this, EventDamage damage);
 "5557565381ec1c02000080bc243802000000":
 cleanup __cdecl CompleteShip* WorldManager::CreateShip(WorldManager *this, ShipEvent* shipEvent, bool boss);
 "5589e557565381ec7c0200008b75088b7d0cc686c20e000000":
@@ -47,4 +49,12 @@ struct WorldManager
 {{
 	bool SwitchShip(std::string shipName);
     bool SwitchShipTransfer(std::string shipName, int overrideSystem);
+
+    void ModifyAllStatusEffects(ShipManager *target, int targetType)
+    {
+        for (StatusEffect effect : this->currentEffects)
+        {
+            this->ModifyStatusEffect(effect, target, targetType);
+        }
+    }
 }};

@@ -19,6 +19,8 @@ cleanup __amd64 void WorldManager::CheckStatusEffects(WorldManager *this, std::v
 cleanup __amd64 void WorldManager::StartGame(WorldManager *this, ShipManager* ship);
 ".554889e541574156534883ec384989fe498b06bf":
 cleanup __amd64 void WorldManager::CreateNewGame(WorldManager *this);
+".5548":
+cleanup __amd64 int WorldManager::PossibleDamage(WorldManager *this, EventDamage damage);
 ".554889e54157415641554154534881ec380a0000":
 cleanup __amd64 CompleteShip* WorldManager::CreateShip(WorldManager *this, ShipEvent* shipEvent, bool boss);
 ".554889e54156534889f34989fe488bb3":
@@ -51,4 +53,12 @@ struct WorldManager
 {{
 	bool SwitchShip(std::string shipName);
 	bool SwitchShipTransfer(std::string shipName, int overrideSystem);
+
+    void ModifyAllStatusEffects(ShipManager *target, int targetType)
+    {
+        for (StatusEffect effect : this->currentEffects)
+        {
+            this->ModifyStatusEffect(effect, target, targetType);
+        }
+    }
 }};

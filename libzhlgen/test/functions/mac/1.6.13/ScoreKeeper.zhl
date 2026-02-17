@@ -53,6 +53,8 @@ cleanup __amd64 int ScoreKeeper::AddTopScoreList(ScoreKeeper *this, TopScore& sc
 cleanup __amd64 void ScoreKeeper::SetSector(ScoreKeeper *this, int sector);
 ".554889e54088b7e8":
 cleanup __amd64 void ScoreKeeper::SetVictory(ScoreKeeper *this, bool victory);
+".554889e55350":
+cleanup __amd64 void ScoreKeeper::AddExploredLocations(ScoreKeeper *this);
 ".554889e54156534883ec204189f64889fb488d3d":
 cleanup __amd64 void ScoreKeeper::AddScrapCollected(ScoreKeeper *this, int scrap);
 ".554889e54157415641554154534883ec584189f5":

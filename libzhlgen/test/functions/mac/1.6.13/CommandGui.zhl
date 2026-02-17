@@ -37,3 +37,15 @@ cleanup __amd64 Point CommandGui::GetWorldCoordinates(CommandGui *this, Point po
 cleanup __amd64 void CommandGui::LButtonDown(CommandGui *this, int mX, int mY, bool shiftHeld);
 "!.554889e54157415653":
 cleanup __amd64 void CommandGui::LButtonUp(CommandGui *this, int mX, int mY, bool shiftHeld);
+
+
+struct CommandGui
+{{
+    void SetSecretSector(bool secret)
+    {
+        if (secret) 
+        {
+            this->secretSector = true;
+        }
+    }
+}};

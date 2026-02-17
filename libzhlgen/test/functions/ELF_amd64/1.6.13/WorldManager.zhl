@@ -2,6 +2,8 @@
 cleanup __amd64 void WorldManager::constructor(WorldManager *this);
 ".415455488d6f10534889fb4889ef":
 cleanup __amd64 int WorldManager::OnInit(WorldManager *this);
+".4155":
+cleanup __amd64 int WorldManager::PossibleDamage(WorldManager *this, EventDamage damage);
 ".554889f5534889fb4883ec08488bb6d0040000":
 cleanup __amd64 void WorldManager::CreateStore(WorldManager *this, LocationEvent* event);
 ".415455534889f34883ec204885f6":
@@ -47,4 +49,12 @@ struct WorldManager
 {{
 	bool SwitchShip(std::string shipName);
     bool SwitchShipTransfer(std::string shipName, int overrideSystem);
+
+    void ModifyAllStatusEffects(ShipManager *target, int targetType)
+    {
+        for (StatusEffect effect : this->currentEffects)
+        {
+            this->ModifyStatusEffect(effect, target, targetType);
+        }
+    }
 }};

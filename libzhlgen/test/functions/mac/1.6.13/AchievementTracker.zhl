@@ -13,7 +13,7 @@ cleanup __amd64 void AchievementTracker::SetSectorEight(AchievementTracker *this
 ".554889e541574156415541545348":
 cleanup __amd64 void AchievementTracker::SetAchievement(AchievementTracker *this, const std::string& achievement, bool noPopup, bool sendToServer);
 ".554889e541574156":
-noHook __amd64 void AchievementTracker::DO_NOT_HOOK_GetFlagValue();
+cleanup __amd64 int AchievementTracker::GetFlagValue(AchievementTracker *this, const std::string& flagName);
 ".554889e541574156":
 cleanup __amd64 bool AchievementTracker::GetFlag(AchievementTracker *this, const std::string& flagName);
 ".554889e541574156":

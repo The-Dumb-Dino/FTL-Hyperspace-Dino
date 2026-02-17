@@ -302,6 +302,8 @@ struct TextString
 
 	std::string GetText();
 
+	void operator+=(const std::string &other);
+
 	std::string data;
 	bool isLiteral;
 	uint8_t gap_ex[4];
@@ -680,6 +682,7 @@ struct AchievementTracker
 {
 	LIBZHL_API void CheckShipAchievements(int shipId, bool hidePopups);
 	LIBZHL_API bool GetFlag(const std::string &flagName);
+	LIBZHL_API int GetFlagValue(const std::string &flagName);
 	LIBZHL_API std::vector<CAchievement*> GetShipAchievements(const std::string &ship);
 	LIBZHL_API int GetShipMarker(const std::string &baseName, const std::string &thisName);
 	LIBZHL_API void LoadAchievementDescriptions();
@@ -5061,6 +5064,14 @@ struct Upgrades : FocusWindow
 
 struct CommandGui
 {
+    void SetSecretSector(bool secret)
+    {
+        if (secret) 
+        {
+            this->secretSector = true;
+        }
+    }
+
 	LIBZHL_API void AddEnemyShip(CompleteShip *ship);
 	LIBZHL_API void CheckGameover();
 	LIBZHL_API Store *CreateNewStore(int sectorNumber);
@@ -7389,6 +7400,7 @@ struct ScoreKeeper
 {
     int CountUnlockedShips(int variant);
 
+	LIBZHL_API void AddExploredLocations();
 	LIBZHL_API void AddScrapCollected(int scrap);
 	LIBZHL_API int AddTopScoreList(TopScore &score, std::vector<TopScore> &topScoreList);
 	LIBZHL_API void AddTopScoreType(TopScore &topScore, int type);
@@ -8602,6 +8614,11 @@ struct SystemStoreBox : StoreBox
 		this->constructor(ship, equip, system);
 	}
 
+	SystemStoreBox()
+	{
+		StoreBox::constructor("storeUI/store_buy_crew", nullptr, nullptr);
+	}
+
 	LIBZHL_API void Activate();
 	LIBZHL_API bool CanHold();
 	LIBZHL_API TextString GetConfirmText();
@@ -8907,6 +8924,14 @@ struct WorldManager
 	bool SwitchShip(std::string shipName);
 	bool SwitchShipTransfer(std::string shipName, int overrideSystem);
 
+    void ModifyAllStatusEffects(ShipManager *target, int targetType)
+    {
+        for (StatusEffect effect : this->currentEffects)
+        {
+            this->ModifyStatusEffect(effect, target, targetType);
+        }
+    }
+
 	LIBZHL_API bool AddBoarders(BoardingEvent &boardingEvent);
 	LIBZHL_API bool CheckRequirements(LocationEvent *event, bool hidden);
 	LIBZHL_API void CheckStatusEffects(std::vector<StatusEffect> &vec);
@@ -8924,6 +8949,7 @@ struct WorldManager
 	LIBZHL_API int OnInit();
 	LIBZHL_API void OnLoop();
 	LIBZHL_API void PauseLoop();
+	LIBZHL_API int PossibleDamage(EventDamage damage);
 	LIBZHL_API void Restart();
 	LIBZHL_API void SaveGame();
 	LIBZHL_API void StartGame(ShipManager *ship);
