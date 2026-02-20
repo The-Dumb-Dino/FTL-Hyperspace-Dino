@@ -435,7 +435,7 @@ HOOK_METHOD(ShipManager, GetSystemPowerMax, (int systemId) -> int)
     SetDummyOxygen(lastState);
     return ret;
 }
-HOOK_METHOD(ShipManager, CanUpgrade, (int systemId, int amount) -> bool)
+HOOK_METHOD(ShipManager, CanUpgrade, (int systemId, int amount) -> int)
 {
     LOG_HOOK("HOOK_METHOD -> ShipManager::CanUpgrade -> Begin (OxygenWithoutSystem.cpp)\n")
     bool lastState = SetDummyOxygen(false);

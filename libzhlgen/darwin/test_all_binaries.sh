@@ -34,7 +34,7 @@ declare -a BINARIES=(
 )
 
 # How long to wait for ZHL to initialize (seconds)
-INIT_TIMEOUT=10
+INIT_TIMEOUT=4
 
 # Colors
 RED='\033[0;31m'
@@ -105,7 +105,7 @@ test_binary() {
     log "Process started (PID: $pid)"
 
     # Wait for ZHL to initialize
-    sleep 10
+    sleep $INIT_TIMEOUT
 
     # Kill the process
     if kill -0 "$pid" 2>/dev/null; then

@@ -4,7 +4,7 @@
 # Launches FTL with Hyperspace, monitors execution, displays results
 # Returns 0 if all tests pass, non-zero otherwise
 #
-# Usage: run_test_darwin.sh <dylib_path> <ftl_binary_path>
+# Usage: run_test_darwin.sh <dylib_path> <ftl_binary_path> [test_name]
 
 set -e
 
@@ -14,15 +14,17 @@ set -e
 
 # Check arguments
 if [ $# -lt 2 ]; then
-    echo "Usage: $0 <dylib_path> <ftl_binary_path>"
+    echo "Usage: $0 <dylib_path> <ftl_binary_path> [test_name]"
     echo ""
     echo "Example:"
     echo "  $0 build-darwin-1.6.13-debug/Hyperspace.1.6.13.amd64.dylib \$HOME/Games/FasterThanLight/FTL1.6.13-base.app/Contents/MacOS/FTL"
+    echo "  $0 build-darwin-1.6.13-debug/Hyperspace.1.6.13.amd64.dylib \$HOME/Games/FasterThanLight/FTL1.6.13-base.app/Contents/MacOS/FTL StoreTest"
     exit 1
 fi
 
 FTL_DYLIB_PATH="$1"
 FTL_BINARY_PATH="$2"
+TEST_NAME="${3:-}"
 
 PROJECT_DIR="$(pwd)"
 
@@ -128,11 +130,21 @@ log "Prerequisites OK"
 
 log "Launching FTL with Hyperspace dylib..."
 log "  Dylib: $FTL_DYLIB_PATH"
+if [ ! -z "$TEST_NAME" ]; then
+    log "  Test: $TEST_NAME (single test mode)"
+else
+    log "  Test: ALL (full suite)"
+fi
 log "  Timeout: ${TIMEOUT_SECONDS}s"
 
 export DYLD_INSERT_LIBRARIES="$FTL_DYLIB_PATH"
 # launch auto tests
 export HYPERSPACE_AUTO_TEST=1
+
+# optional: run specific test by name
+if [ ! -z "$TEST_NAME" ]; then
+    export HYPERSPACE_TEST_NAME="$TEST_NAME"
+fi
 
 # immediate exit on freeze detection
 export HYPERSPACE_FORCE_EXIT_ON_FREEZE=1
