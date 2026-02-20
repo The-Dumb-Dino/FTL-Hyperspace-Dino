@@ -14,11 +14,12 @@ HOOK_METHOD(CApp, OnExit, () -> void)
 // === MainMenu Hooks ===
 
 // Initialize crash detection and show dialog on menu open
-HOOK_METHOD(MainMenu, Open, () -> void)
+HOOK_METHOD(MainMenu, Open, () -> bool)
 {
     LOG_HOOK("HOOK_METHOD -> MainMenu::Open -> Begin (CrashDetectionHooks.cpp)\n")
-    super();
+    bool ret = super();
     CrashReportFlow::GetInstance()->OnMenuOpen();
+    return ret;
 }
 
 // Render crash detection dialogs in menu

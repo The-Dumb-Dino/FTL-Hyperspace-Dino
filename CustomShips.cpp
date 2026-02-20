@@ -1172,7 +1172,7 @@ HOOK_METHOD(ShipManager, DamageArea, (Pointf location, Damage dmg, bool forceHit
     return ret;
 }
 
-HOOK_METHOD(ShipManager, DamageBeam, (Pointf location1, Pointf location2, Damage dmg) -> void)
+HOOK_METHOD(ShipManager, DamageBeam, (Pointf location1, Pointf location2, Damage dmg) -> bool)
 {
     LOG_HOOK("HOOK_METHOD -> ShipManager::DamageBeam -> Begin (CustomShips.cpp)\n")
 
@@ -1197,7 +1197,7 @@ HOOK_METHOD(ShipManager, DamageBeam, (Pointf location1, Pointf location2, Damage
         }
     }
 
-    super(location1, location2, dmg);
+    return super(location1, location2, dmg);
 }
 
 HOOK_METHOD(ShipAI, SetStalemate, (bool stalemate) -> void)
