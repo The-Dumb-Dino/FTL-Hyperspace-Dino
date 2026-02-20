@@ -3773,7 +3773,7 @@ struct VTable_Drone
   bool (__thiscall *Destroyed)(Drone *);
   Point (__thiscall *GetWorldLocation)(Drone *);
   void (__thiscall *SetWorldLocation)(Drone *, Point position);
-  Slot (__thiscall *GetDroneSlot)(Drone *);
+  Slot (__stdcall *GetDroneSlot)(Drone *drone);
   int (__thiscall *GetDroneHealth)(Drone *);
   int (__thiscall *GetRequiredPower)(Drone *);
   void (__thiscall *RenderIcon)(Drone *);

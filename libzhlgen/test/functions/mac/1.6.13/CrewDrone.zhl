@@ -1,5 +1,7 @@
 "554889e54157415641554154534881ec1802":
 cleanup __amd64 void CrewDrone::constructor(CrewDrone *this, const std::string& _type, const std::string& _name, int _iShipId, const DroneBlueprint* _blueprint, CrewAnimation* _animation);
+"!.554889e50f57":
+cleanup __amd64 bool CrewDrone::ShipDamage(CrewDrone *this, float amount);
 "!.554889e5415741564155415453504889fb4c":
 virtual cleanup __amd64 void CrewDrone::OnLoop(CrewDrone *this);
 "!.554889e553504889fb488d05":
