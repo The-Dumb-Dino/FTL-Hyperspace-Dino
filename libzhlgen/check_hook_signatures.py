@@ -31,7 +31,9 @@ HOOK_RE = re.compile(r'''
 ''', re.VERBOSE)
 
 def normalize(t):
-    return ' '.join(t.split()).strip()
+    t = ' '.join(t.split()).strip()
+    t = t.replace('FUNC_NAKED ', '')  # calling convention, not a type
+    return t
 
 def extract_definitions(filepath):
     content = Path(filepath).read_text(errors='ignore')
