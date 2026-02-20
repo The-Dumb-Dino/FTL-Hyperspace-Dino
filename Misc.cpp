@@ -33,15 +33,15 @@ HOOK_METHOD(CApp, OnInit, () -> bool)
 
 // Plays airlock sound when crew have been "dismissed"
 
-HOOK_METHOD(CrewEquipBox, RemoveItem, () -> int)
+HOOK_METHOD(CrewEquipBox, RemoveItem, () -> void)
 {
     LOG_HOOK("HOOK_METHOD -> CrewEquipBox::RemoveItem -> Begin (Misc.cpp)\n")
-    int ret = super();
+    super();
     if (!CustomOptionsManager::GetInstance()->dismissSound.currentValue.empty())
     {
         G_->GetSoundControl()->PlaySoundMix(CustomOptionsManager::GetInstance()->dismissSound.currentValue, -1.f, false);
     }
-    return ret;
+    return;
 }
 
 
@@ -1122,11 +1122,12 @@ HOOK_METHOD(CApp, OnLoop, () -> void)
     Global::GetInstance()->getLuaContext()->getLibScript()->call_on_internal_event_callbacks(InternalEvents::ON_TICK);
 }
 
-HOOK_METHOD(MainMenu, Open, () -> void)
+HOOK_METHOD(MainMenu, Open, () -> bool)
 {
     LOG_HOOK("HOOK_METHOD -> MainMenu::Open -> Begin (Misc.cpp)\n")
-    super();
+    bool ret = super();
     Global::GetInstance()->getLuaContext()->getLibScript()->call_on_internal_event_callbacks(InternalEvents::MAIN_MENU);
+    return ret;
 }
 
 HOOK_METHOD(SpaceManager, DangerousEnvironment, () -> bool)

@@ -2064,12 +2064,12 @@ namespace _func148
 {
     static void *func = 0;
 	static short argdata[] = {0x1ff};
-	static FunctionDefinition funcObj("CApp::SetupWindow", typeid(int (CApp::*)()), "5383ec38c7442404010000008b5c2440", argdata, 1, 2, &func);
+	static FunctionDefinition funcObj("CApp::SetupWindow", typeid(bool (CApp::*)()), "5383ec38c7442404010000008b5c2440", argdata, 1, 2, &func);
 }
 
-int CApp::SetupWindow()
+bool CApp::SetupWindow()
 {
-	typedef int __attribute__((cdecl)) (*custom_arg_funcptr_t)(CApp *this_arg);
+	typedef bool __attribute__((cdecl)) (*custom_arg_funcptr_t)(CApp *this_arg);
 	custom_arg_funcptr_t execfunc = (custom_arg_funcptr_t) _func148::func;
 	return execfunc(this);
 }
@@ -2190,12 +2190,12 @@ namespace _func157
 {
     static void *func = 0;
 	static short argdata[] = {0x1ff};
-	static FunctionDefinition funcObj("CApp::OnInit", typeid(int (CApp::*)()), "5589e557565383ec4c8b5d08c7042400000000", argdata, 1, 2, &func);
+	static FunctionDefinition funcObj("CApp::OnInit", typeid(bool (CApp::*)()), "5589e557565383ec4c8b5d08c7042400000000", argdata, 1, 2, &func);
 }
 
-int CApp::OnInit()
+bool CApp::OnInit()
 {
-	typedef int __attribute__((cdecl)) (*custom_arg_funcptr_t)(CApp *this_arg);
+	typedef bool __attribute__((cdecl)) (*custom_arg_funcptr_t)(CApp *this_arg);
 	custom_arg_funcptr_t execfunc = (custom_arg_funcptr_t) _func157::func;
 	return execfunc(this);
 }
@@ -3583,12 +3583,12 @@ namespace _func257
 {
     static void *func = 0;
 	static short argdata[] = {0x1ff};
-	static FunctionDefinition funcObj("CombatControl::CurrentTargetIsBoss", typeid(char (CombatControl::*)()), "8b4424048b80b805000085c074??8b10", argdata, 1, 2, &func);
+	static FunctionDefinition funcObj("CombatControl::CurrentTargetIsBoss", typeid(bool (CombatControl::*)()), "8b4424048b80b805000085c074??8b10", argdata, 1, 2, &func);
 }
 
-char CombatControl::CurrentTargetIsBoss()
+bool CombatControl::CurrentTargetIsBoss()
 {
-	typedef char __attribute__((cdecl)) (*custom_arg_funcptr_t)(CombatControl *this_arg);
+	typedef bool __attribute__((cdecl)) (*custom_arg_funcptr_t)(CombatControl *this_arg);
 	custom_arg_funcptr_t execfunc = (custom_arg_funcptr_t) _func257::func;
 	return execfunc(this);
 }
@@ -3597,12 +3597,12 @@ namespace _func258
 {
     static void *func = 0;
 	static short argdata[] = {0x1ff};
-	static FunctionDefinition funcObj("CombatControl::CanTargetSelf", typeid(char (CombatControl::*)()), "5589e557565383ec4c8b75088b86a4000000", argdata, 1, 2, &func);
+	static FunctionDefinition funcObj("CombatControl::CanTargetSelf", typeid(bool (CombatControl::*)()), "5589e557565383ec4c8b75088b86a4000000", argdata, 1, 2, &func);
 }
 
-char CombatControl::CanTargetSelf()
+bool CombatControl::CanTargetSelf()
 {
-	typedef char __attribute__((cdecl)) (*custom_arg_funcptr_t)(CombatControl *this_arg);
+	typedef bool __attribute__((cdecl)) (*custom_arg_funcptr_t)(CombatControl *this_arg);
 	custom_arg_funcptr_t execfunc = (custom_arg_funcptr_t) _func258::func;
 	return execfunc(this);
 }
@@ -12375,12 +12375,12 @@ namespace _func898
 {
     static void *func = 0;
 	static short argdata[] = {0x1ff, 0x1ff, 0x1ff, 0x1ff, 0x1ff, 0x4ff, 0x1ff, 0x1ff};
-	static FunctionDefinition funcObj("ResourceControl::RenderImageString", typeid(int (ResourceControl::*)(std::string &, int , int , int , GL_Color , float , bool )), "5383ec588b4424648b9c2488000000894424048b442460890424e8????????f30f104c2474f30f10442478f30f1054247c85c00f84????????89c285d2f30f2a5c2470", argdata, 8, 2, &func);
+	static FunctionDefinition funcObj("ResourceControl::RenderImageString", typeid(void (ResourceControl::*)(std::string &, int , int , int , GL_Color , float , bool )), "5383ec588b4424648b9c2488000000894424048b442460890424e8????????f30f104c2474f30f10442478f30f1054247c85c00f84????????89c285d2f30f2a5c2470", argdata, 8, 6, &func);
 }
 
-int ResourceControl::RenderImageString(std::string &tex, int x, int y, int rotation, GL_Color color, float opacity, bool mirror)
+void ResourceControl::RenderImageString(std::string &tex, int x, int y, int rotation, GL_Color color, float opacity, bool mirror)
 {
-	typedef int __attribute__((cdecl)) (*custom_arg_funcptr_t)(ResourceControl *this_arg, std::string &tex_arg, int x_arg, int y_arg, int rotation_arg, GL_Color color_arg, float opacity_arg, bool mirror_arg);
+	typedef void __attribute__((cdecl)) (*custom_arg_funcptr_t)(ResourceControl *this_arg, std::string &tex_arg, int x_arg, int y_arg, int rotation_arg, GL_Color color_arg, float opacity_arg, bool mirror_arg);
 	custom_arg_funcptr_t execfunc = (custom_arg_funcptr_t) _func898::func;
 	return execfunc(this, tex, x, y, rotation, color, opacity, mirror);
 }

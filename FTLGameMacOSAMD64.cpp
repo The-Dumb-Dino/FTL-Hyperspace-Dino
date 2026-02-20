@@ -1803,12 +1803,12 @@ int CApp::OnExecute()
 namespace _func145
 {
     static void *func = 0;
-	static FunctionDefinition funcObj("CApp::OnInit", typeid(int (CApp::*)()), ".554889e54157415653", nullptr, 0, 0, &func);
+	static FunctionDefinition funcObj("CApp::OnInit", typeid(bool (CApp::*)()), ".554889e54157415653", nullptr, 0, 0, &func);
 }
 
-int CApp::OnInit()
+bool CApp::OnInit()
 {
-	typedef int (*custom_arg_funcptr_t)(CApp *this_arg);
+	typedef bool (*custom_arg_funcptr_t)(CApp *this_arg);
 	custom_arg_funcptr_t execfunc = (custom_arg_funcptr_t) _func145::func;
 	return execfunc(this);
 }
@@ -1881,12 +1881,12 @@ void CApp::UpdateWindowSettings()
 namespace _func151
 {
     static void *func = 0;
-	static FunctionDefinition funcObj("CApp::SetupWindow", typeid(int (CApp::*)()), ".554889e5415741565350", nullptr, 0, 0, &func);
+	static FunctionDefinition funcObj("CApp::SetupWindow", typeid(bool (CApp::*)()), ".554889e5415741565350", nullptr, 0, 0, &func);
 }
 
-int CApp::SetupWindow()
+bool CApp::SetupWindow()
 {
-	typedef int (*custom_arg_funcptr_t)(CApp *this_arg);
+	typedef bool (*custom_arg_funcptr_t)(CApp *this_arg);
 	custom_arg_funcptr_t execfunc = (custom_arg_funcptr_t) _func151::func;
 	return execfunc(this);
 }
@@ -3443,12 +3443,12 @@ ShipManager *CombatControl::GetCurrentTarget()
 namespace _func276
 {
     static void *func = 0;
-	static FunctionDefinition funcObj("CombatControl::CurrentTargetIsBoss", typeid(char (CombatControl::*)()), ".554889e5488bbf10", nullptr, 0, 0, &func);
+	static FunctionDefinition funcObj("CombatControl::CurrentTargetIsBoss", typeid(bool (CombatControl::*)()), ".554889e5488bbf10", nullptr, 0, 0, &func);
 }
 
-char CombatControl::CurrentTargetIsBoss()
+bool CombatControl::CurrentTargetIsBoss()
 {
-	typedef char (*custom_arg_funcptr_t)(CombatControl *this_arg);
+	typedef bool (*custom_arg_funcptr_t)(CombatControl *this_arg);
 	custom_arg_funcptr_t execfunc = (custom_arg_funcptr_t) _func276::func;
 	return execfunc(this);
 }
@@ -3612,12 +3612,12 @@ std::pair<int, int> CombatControl::GetTeleportationCommand()
 namespace _func289
 {
     static void *func = 0;
-	static FunctionDefinition funcObj("CombatControl::CanTargetSelf", typeid(char (CombatControl::*)()), ".554889e54156534881ec800000004889fb48", nullptr, 0, 0, &func);
+	static FunctionDefinition funcObj("CombatControl::CanTargetSelf", typeid(bool (CombatControl::*)()), ".554889e54156534881ec800000004889fb48", nullptr, 0, 0, &func);
 }
 
-char CombatControl::CanTargetSelf()
+bool CombatControl::CanTargetSelf()
 {
-	typedef char (*custom_arg_funcptr_t)(CombatControl *this_arg);
+	typedef bool (*custom_arg_funcptr_t)(CombatControl *this_arg);
 	custom_arg_funcptr_t execfunc = (custom_arg_funcptr_t) _func289::func;
 	return execfunc(this);
 }
@@ -11622,12 +11622,12 @@ void ResourceControl::RenderImage(GL_Texture *tex, int x, int y, int rotation, G
 namespace _func927
 {
     static void *func = 0;
-	static FunctionDefinition funcObj("ResourceControl::RenderImageString", typeid(int (ResourceControl::*)(std::string &, int , int , int , GL_Color , float , bool )), ".554889e5415741564154534883ec", nullptr, 0, 0, &func);
+	static FunctionDefinition funcObj("ResourceControl::RenderImageString", typeid(void (ResourceControl::*)(std::string &, int , int , int , GL_Color , float , bool )), ".554889e5415741564154534883ec", nullptr, 0, 0, &func);
 }
 
-int ResourceControl::RenderImageString(std::string &tex, int x, int y, int rotation, GL_Color color, float opacity, bool mirror)
+void ResourceControl::RenderImageString(std::string &tex, int x, int y, int rotation, GL_Color color, float opacity, bool mirror)
 {
-	typedef int (*custom_arg_funcptr_t)(ResourceControl *this_arg, std::string &tex_arg, int x_arg, int y_arg, int rotation_arg, GL_Color color_arg, float opacity_arg, bool mirror_arg);
+	typedef void (*custom_arg_funcptr_t)(ResourceControl *this_arg, std::string &tex_arg, int x_arg, int y_arg, int rotation_arg, GL_Color color_arg, float opacity_arg, bool mirror_arg);
 	custom_arg_funcptr_t execfunc = (custom_arg_funcptr_t) _func927::func;
 	return execfunc(this, tex, x, y, rotation, color, opacity, mirror);
 }

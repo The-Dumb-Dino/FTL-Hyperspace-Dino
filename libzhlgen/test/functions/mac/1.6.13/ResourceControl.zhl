@@ -16,7 +16,7 @@ cleanup __amd64 bool ResourceControl::ImageExists(ResourceControl *this, const s
 "0f28f20f28e84885f674500f57c0f30f2ac2":
 cleanup __amd64 void ResourceControl::RenderImage(ResourceControl *this, GL_Texture* tex, int x, int y, int rotation, GL_Color color, float opacity, bool mirror);
 ".554889e5415741564154534883ec":
-cleanup __amd64 int ResourceControl::RenderImageString(ResourceControl *this, std::string& tex, int x, int y, int rotation, GL_Color color, float opacity, bool mirror);
+cleanup __amd64 void ResourceControl::RenderImageString(ResourceControl *this, std::string& tex, int x, int y, int rotation, GL_Color color, float opacity, bool mirror);
 "!.554889e50f":
 cleanup __amd64 GL_Primitive* ResourceControl::CreateImagePrimitive(ResourceControl *this, GL_Texture* image, int x, int y, int rotation, GL_Color color, float alpha, bool mirror);
 "!.554889e5415741564154534883ec":

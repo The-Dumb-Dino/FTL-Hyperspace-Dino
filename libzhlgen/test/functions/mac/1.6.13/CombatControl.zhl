@@ -3,7 +3,7 @@ cleanup __amd64 void CombatControl::constructor(CombatControl *this);
 ".554889e5488b87100900004885c07406":
 cleanup __amd64 ShipManager* CombatControl::GetCurrentTarget(CombatControl *this);
 ".554889e5488bbf10":
-cleanup __amd64 char CombatControl::CurrentTargetIsBoss(CombatControl *this);
+cleanup __amd64 bool CombatControl::CurrentTargetIsBoss(CombatControl *this);
 ".554889e54157415641554154534883ec484189f4":
 cleanup __amd64 void CombatControl::DrawHostileBox(CombatControl *this, GL_Color color, int stencilBit);
 ".554889e54156534883ec304889fb80":
@@ -29,7 +29,7 @@ cleanup __amd64 void CombatControl::Clear(CombatControl *this);
 ".554889e5415741564154534889fb41":
 cleanup __amd64 std::pair<int,int> CombatControl::GetTeleportationCommand(CombatControl *this);
 ".554889e54156534881ec800000004889fb48":
-cleanup __amd64 char CombatControl::CanTargetSelf(CombatControl *this);
+cleanup __amd64 bool CombatControl::CanTargetSelf(CombatControl *this);
 "!.554889e54156534883ec404889fb83":
 cleanup __amd64 void CombatControl::UpdateAiming(CombatControl *this);
 ".554889e553504889fb488b86100900004885c07426":

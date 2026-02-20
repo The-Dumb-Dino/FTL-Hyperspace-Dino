@@ -4203,7 +4203,7 @@ struct CApp : CEvent
 	LIBZHL_API void OnCleanup();
 	LIBZHL_API int OnExecute();
 	LIBZHL_API void OnExit();
-	LIBZHL_API int OnInit();
+	LIBZHL_API bool OnInit();
 	LIBZHL_API void OnInputBlur();
 	LIBZHL_API void OnInputFocus();
 	LIBZHL_API void OnKeyDown(SDLKey key);
@@ -4226,7 +4226,7 @@ struct CApp : CEvent
 	LIBZHL_API void OnTouchDown(int id, int x, int y);
 	LIBZHL_API void OnTouchMove(int id, int x, int y, int initialX, int initialY);
 	LIBZHL_API void OnTouchUp(int id, int x, int y, int initialX, int initialY);
-	LIBZHL_API int SetupWindow();
+	LIBZHL_API bool SetupWindow();
 	LIBZHL_API Point TranslateMouse(int mX, int mY);
 	LIBZHL_API void UpdateFullScreen();
 	LIBZHL_API void UpdateWindowSettings();
@@ -4441,9 +4441,9 @@ struct CombatControl
     void ArmArtillery(ArtillerySystem* artillerySystem);
 
 	LIBZHL_API void AddEnemyShip(CompleteShip *enemy);
-	LIBZHL_API char CanTargetSelf();
+	LIBZHL_API bool CanTargetSelf();
 	LIBZHL_API void Clear();
-	LIBZHL_API char CurrentTargetIsBoss();
+	LIBZHL_API bool CurrentTargetIsBoss();
 	LIBZHL_API void DisarmAll();
 	LIBZHL_API void DisarmTeleporter();
 	LIBZHL_API void DrawHostileBox(GL_Color color, int stencilBit);
@@ -7316,7 +7316,7 @@ struct ResourceControl
 	LIBZHL_API void OnInit(int imageSwappingMode);
 	LIBZHL_API bool PreloadResources(bool preloadPlayerShips);
 	LIBZHL_API void RenderImage(GL_Texture *tex, int x, int y, int rotation, GL_Color color, float opacity, bool mirror);
-	LIBZHL_API int RenderImageString(std::string &tex, int x, int y, int rotation, GL_Color color, float opacity, bool mirror);
+	LIBZHL_API void RenderImageString(std::string &tex, int x, int y, int rotation, GL_Color color, float opacity, bool mirror);
 	LIBZHL_API void RenderLoadingBar(float initialProgress, float finalProgress);
 	LIBZHL_API void constructor();
 	

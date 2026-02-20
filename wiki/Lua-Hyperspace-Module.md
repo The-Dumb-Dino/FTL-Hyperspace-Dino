@@ -3773,7 +3773,7 @@ Accessed via `Projectile`'s `.extend` field
 - [`GL_Texture`](./Lua-Graphics-Module#GL_Texture) `:*GetImageId(std::string dir)`
 - `bool` `:ImageExists(std::string name)`
 - `void` `:RenderImage(GL_Texture *tex, int x, int y, int rotation, GL_Color color, float opacity, bool mirror)`
-- `int` `:RenderImageString(std::string tex, int x, int y, int rotation, GL_Color color, float opacity, bool mirror)`
+- `void` `:RenderImageString(std::string tex, int x, int y, int rotation, GL_Color color, float opacity, bool mirror)`
 - `char` `:*LoadFile(const std::string &fileName)`
 
 ## Point
