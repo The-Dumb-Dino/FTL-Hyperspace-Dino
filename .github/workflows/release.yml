@@ -1,4 +1,4 @@
-name: 'Prepare Release'
+name: 'Release'
 
 on:
   workflow_dispatch:
@@ -8,12 +8,20 @@ on:
         required: true
         default: '1.x.x'
 
+permissions:
+  contents: write
+
 jobs:
+  # Gate: check hook signatures before releasing
+  check-hooks:
+    uses: ./.github/workflows/check-hook-signatures.yml
+
   prepare:
+    needs: check-hooks
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           ref: master
           fetch-depth: 0
@@ -42,36 +50,22 @@ jobs:
           generate_release_notes: true
           body: |
             ## Download Instructions
-            - **Linux Only**: Download `FTL.Hyperspace.${{ inputs.version }}-Linux.zip` 
+            - **Linux Only**: Download `FTL.Hyperspace.${{ inputs.version }}-Linux.zip`
             - **Windows Only**: Download `FTL.Hyperspace.${{ inputs.version }}-Windows.zip`
             - **macOS Only**: Download `FTL.Hyperspace.${{ inputs.version }}-MacOS.zip`
 
             Platform-specific builds will be uploaded automatically.
 
-      - name: Trigger Linux/Windows Build
-        uses: actions/github-script@v6
-        with:
-          script: |
-            await github.rest.actions.createWorkflowDispatch({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              workflow_id: 'release-linux-windows.yml',
-              ref: 'master',
-              inputs: {
-                tag: 'v${{ inputs.version }}'
-              }
-            });
+  build-linux-windows:
+    needs: prepare
+    uses: ./.github/workflows/release-linux-windows.yml
+    with:
+      version: ${{ inputs.version }}
+    secrets: inherit
 
-      - name: Trigger macOS Build
-        uses: actions/github-script@v6
-        with:
-          script: |
-            await github.rest.actions.createWorkflowDispatch({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              workflow_id: 'release-macos.yml',
-              ref: 'master',
-              inputs: {
-                tag: 'v${{ inputs.version }}'
-              }
-            });
+  build-macos:
+    needs: prepare
+    uses: ./.github/workflows/release-macos.yml
+    with:
+      version: ${{ inputs.version }}
+    secrets: inherit
