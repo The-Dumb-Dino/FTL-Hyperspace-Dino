@@ -2399,7 +2399,7 @@ struct LIBZHL_INTERFACE CrewMember
 	virtual int GetMaxHealth() LIBZHL_PLACEHOLDER
 	virtual bool IsDead() LIBZHL_PLACEHOLDER
 	virtual bool PermanentDeath() LIBZHL_PLACEHOLDER
-	virtual bool ShipDamage(float amount) LIBZHL_PLACEHOLDER
+	LIBZHL_API virtual bool ShipDamage(float amount);
 	virtual bool FireFightingSoundEffect() LIBZHL_PLACEHOLDER
 	LIBZHL_API virtual std::string GetUniqueRepairing();
 	virtual bool ProvidesVision() LIBZHL_PLACEHOLDER
@@ -2696,6 +2696,7 @@ struct CrewDrone : CrewMember
 	LIBZHL_API virtual void OnLoop();
 	LIBZHL_API virtual bool ProvidesVision();
 	LIBZHL_API void SetCurrentShip(int shipId);
+	LIBZHL_API bool ShipDamage(float amount);
 	LIBZHL_API void constructor(const std::string &type, const std::string &name, int shipId, const DroneBlueprint *blueprint, CrewAnimation *anim);
 	LIBZHL_API void destructor();
 	
@@ -4754,6 +4755,7 @@ struct CommandGui
 
 	LIBZHL_API void AddEnemyShip(CompleteShip *ship);
 	LIBZHL_API void CheckGameover();
+	LIBZHL_API void ClearLocation();
 	LIBZHL_API Store *CreateNewStore(int sectorNumber);
 	LIBZHL_API Point GetWorldCoordinates(Point point, bool fromTarget);
 	LIBZHL_API bool IsGameOver();
@@ -5812,16 +5814,15 @@ struct LocationEvent
             newChoice.text.isLiteral = true;
             newChoice.requirement = requirement;
             newChoice.hiddenReward = hiddenReward;
- 
+
             this->choices.push_back(newChoice);
         }
     }
- 
+
     bool RemoveChoice(int index)
     {
         if (index >= 0 && index < this->choices.size())
         {
-            delete this->choices[index].event;
             this->choices.erase(this->choices.begin() + index);
             return true;
         }
@@ -7334,9 +7335,9 @@ struct Ship : ShipObject
 
 struct ShipButton : Button
 {
-	ShipButton(int x, int y)
+	ShipButton(int shipType, int shipVariant)
 	{
-		this->constructor(x, y);
+		this->constructor(shipType, shipVariant);
 	}
 
 	LIBZHL_API void MouseMove(int x, int y);

@@ -21,6 +21,8 @@ cleanup __amd64 void CommandGui::OnLoop(CommandGui *this);
 cleanup __amd64 void CommandGui::MouseMove(CommandGui *this, int mX, int mY);
 ".554889e5415741564155":
 cleanup __amd64 void CommandGui::LinkShip(CommandGui *this, CompleteShip *ship);
+".554889e5":
+cleanup __amd64 void CommandGui::ClearLocation(CommandGui *this);
 ".554889e5415741564154534881ecb000000049":
 cleanup __amd64 void CommandGui::OnInit(CommandGui *this);
 "!.554889e541":

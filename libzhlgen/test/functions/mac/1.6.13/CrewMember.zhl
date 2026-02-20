@@ -218,6 +218,8 @@ virtual cleanup __amd64 bool CrewMember::CanRepair(CrewMember *this);
 virtual cleanup __amd64 bool CrewMember::CanSabotage(CrewMember *this);
 ".554889e580bfbc00":
 virtual cleanup __amd64 bool CrewMember::CanMan(CrewMember *this);
+".554889e55d":
+cleanup __amd64 bool CrewMember::ShipDamage(CrewMember *this, float amount);
 
 
 struct CrewMember depends (CrewAnimation, CrewBlueprint, ShipObject)
