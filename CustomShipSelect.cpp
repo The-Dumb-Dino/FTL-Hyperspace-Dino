@@ -2469,7 +2469,7 @@ HOOK_METHOD_PRIORITY(ShipBuilder, MouseClick, 9999, (int mX, int mY) -> void)
                     *Global::difficulty = 2;
                     this->easyButton.SetActive(true);
                     this->normalButton.SetActive(true);
-                    this->hardButton.SetActive(true);
+                    this->hardButton.SetActive(false);
                 }
             }
             else
@@ -2809,6 +2809,16 @@ HOOK_METHOD(ShipBuilder, MouseMove, (int x, int y) -> void)
     {
         shipBuilder_augLeftButton->MouseMove(x, y, false);
         shipBuilder_augRightButton->MouseMove(x, y, false);
+    }
+
+    if (!introScreen.bOpen && !shipSelect.bOpen)
+    {
+        int diff = *Global::difficulty;
+
+        // Selected difficulty button should not show the hover color
+        if (diff == 0) easyButton.bHover = false;
+        else if (diff == 1) normalButton.bHover = false;
+        else if (diff == 2) hardButton.bHover = false;
     }
 }
 
@@ -3829,6 +3839,10 @@ HOOK_METHOD(ShipBuilder, Open, () -> void)
     super();
 
     customSel->OnInit(&shipSelect);
+
+    easyButton.SetSelectedColor(COLOR_BUTTON_HOVER);
+    normalButton.SetSelectedColor(COLOR_BUTTON_HOVER);
+    hardButton.SetSelectedColor(COLOR_BUTTON_HOVER);
 
     if (customSel->hideFirstPage)
     {
