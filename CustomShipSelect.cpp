@@ -2324,175 +2324,174 @@ HOOK_METHOD_PRIORITY(ShipBuilder, MouseClick, 9999, (int mX, int mY) -> void)
 {
     LOG_HOOK("HOOK_METHOD_PRIORITY -> ShipBuilder::MouseClick -> Begin (CustomShipSelect.cpp)\n")
 
-    GenericButton *this_02;
-    
     if (this->introScreen.bOpen)
     {
-        return this->introScreen.MouseClick(mX, mY);
+        this->introScreen.MouseClick(mX, mY);
+        return;
     }
-    if (!this->bRenaming)
+
+    if (this->bRenaming)
     {
-        if (!this->shipSelect.bOpen)
+        return;
+    }
+
+    if (this->shipSelect.bOpen)
+    {
+        this->shipSelect.MouseClick();
+        if (this->shipSelect.GetSelection() != -1)
         {
-            for (CrewCustomizeBox* currentBox : this->vCrewBoxes)
+            this->currentShipId = this->shipSelect.GetSelection();
+            if (this->currentShip)
             {
-                if (!this->bCustomizingCrew)
-                {
-                    if (currentBox->customizeButton.Hovering())
-                    {
-                        currentBox->SetCustomizeMode(Point(100, 542));
-                    }
-                    else
-                    {
-                        currentBox->MouseClick();
-                    }
-                }
-                else
-                {
-                    currentBox->MouseClick();
-                }
+                this->currentShip->destructor2();
             }
-            
-            if (!this->startButton.Hovering())
-            {
-                if (!this->hardButton.Hovering())
-                {
-                    if (!this->easyButton.Hovering())
-                    {
-                        if (!this->normalButton.Hovering())
-                        {
-                            if (this->renameButton.Hovering())
-                            {
-                                this->bRenaming = true;
-                                this->nameInput.Start();
-                                return;
-                            }
+            this->SwitchShip(this->currentShipId, this->shipSelect.currentType);
+            this->shipSelect.Close();
+        }
+        return;
+    }
 
-                            if (this->leftButton.Hovering())
-                            {
-                                return this->CycleShipPrevious();
-                            }
-                            
-                            if (this->rightButton.Hovering())
-                            {
-                                return this->CycleShipNext();
-                            }
-                            
-                            if (this->showButton.Hovering())
-                            {
-                                this->bShowRooms = !this->bShowRooms;
-                                return;
-                            }
-                            
-                            if (this->listButton.Hovering())
-                            {
-                                return this->shipSelect.Open(this->currentShipId,this->currentType);
-                            }
-                            
-                            if (this->typeA.Hovering()) 
-                            {
-                                return this->SwapType(0);
-                            }
-
-                            if (this->typeB.Hovering()) 
-                            {
-                                return this->SwapType(1);
-                            }
-
-                            if (this->typeC.Hovering()) 
-                            {
-                                return this->SwapType(2);
-                            }
-                            
-                            if (this->advancedOffButton.Hovering())
-                            {
-                                G_->GetSettings()->bDlcEnabled = false;
-                                this->currentShip->CheckDlcEnabled();
-                                this->advancedOffButton.SetActive(false);
-                                this->advancedOnButton.SetActive(true);
-                                return;
-                            }
-                            
-                            if (this->advancedOnButton.Hovering())
-                            {
-                                G_->GetSettings()->bDlcEnabled = true;
-                                this->currentShip->CheckDlcEnabled();
-                                this->advancedOffButton.SetActive(true);
-                                this->advancedOnButton.SetActive(false);
-                                return;
-                            }
-                            
-                            if (this->randomButton.Hovering())
-                            {
-                                std::vector<int> possibleShips;
-                                for (int i = 0; i < 30; ++i)
-                                {
-                                    if (G_->GetScoreKeeper()->GetShipUnlocked(i % 10, i / 10))
-                                    {
-                                        possibleShips.push_back(i);
-                                    }
-                                }
-
-                                int selected_ship_data = possibleShips[random32() % possibleShips.size()];
-
-                                int shipId = selected_ship_data % 10;
-                                int shipType = selected_ship_data / 10;
-
-                                this->currentShipId = shipId;
-
-                                if (this->currentShip)
-                                {
-                                    this->currentShip->destructor2();
-                                }
-
-                                return this->SwitchShip(shipId, shipType);
-                            }
-                        }
-                        /* Begin: inline void SetDifficulty(int val) */
-                        *Global::difficulty = 1;
-                        this->normalButton.SetActive(false);
-                        this_02 = &this->easyButton;
-                    }
-                    else
-                    {
-                        /* Begin: inline void SetDifficulty(int val) */
-                        *Global::difficulty = 0;
-                        this->easyButton.SetActive(false);
-                        this_02 = &this->normalButton;
-                    }
-                    this_02->SetActive(true);
-                    this->hardButton.SetActive(true);
-                }
-                else
-                {
-                    /* Begin: inline void SetDifficulty(int val) */
-                    *Global::difficulty = 2;
-                    this->easyButton.SetActive(true);
-                    this->normalButton.SetActive(true);
-                    this->hardButton.SetActive(true);
-                }
-            }
-            else
-            {
-                this->Finish();
-            }
+    // Handle crew customization boxes
+    for (CrewCustomizeBox* currentBox : this->vCrewBoxes)
+    {
+        if (!this->bCustomizingCrew && currentBox->customizeButton.Hovering())
+        {
+            currentBox->SetCustomizeMode(Point(100, 542));
         }
         else
         {
-            this->shipSelect.MouseClick();
-            if (this->shipSelect.GetSelection() != -1)
-            {
-                this->currentShipId = this->shipSelect.GetSelection();
-                if (this->currentShip)
-                {
-                    this->currentShip->destructor2();
-                }
-                this->SwitchShip(this->currentShipId, this->shipSelect.currentType);
-                this->shipSelect.Close();
-            }
+            currentBox->MouseClick();
         }
     }
-    return;
+
+    // Start button
+    if (this->startButton.Hovering())
+    {
+        this->Finish();
+        return;
+    }
+
+    // Difficulty buttons (inactive = selected)
+    if (this->easyButton.Hovering())
+    {
+        *Global::difficulty = 0;
+        this->easyButton.SetActive(false);
+        this->normalButton.SetActive(true);
+        this->hardButton.SetActive(true);
+        return;
+    }
+    if (this->normalButton.Hovering())
+    {
+        *Global::difficulty = 1;
+        this->easyButton.SetActive(true);
+        this->normalButton.SetActive(false);
+        this->hardButton.SetActive(true);
+        return;
+    }
+    if (this->hardButton.Hovering())
+    {
+        *Global::difficulty = 2;
+        this->easyButton.SetActive(true);
+        this->normalButton.SetActive(true);
+        this->hardButton.SetActive(false);
+        return;
+    }
+
+    // Rename button
+    if (this->renameButton.Hovering())
+    {
+        this->bRenaming = true;
+        this->nameInput.Start();
+        return;
+    }
+
+    // Ship navigation
+    if (this->leftButton.Hovering())
+    {
+        this->CycleShipPrevious();
+        return;
+    }
+    if (this->rightButton.Hovering())
+    {
+        this->CycleShipNext();
+        return;
+    }
+
+    // Show rooms toggle
+    if (this->showButton.Hovering())
+    {
+        this->bShowRooms = !this->bShowRooms;
+        return;
+    }
+
+    // Ship list
+    if (this->listButton.Hovering())
+    {
+        this->shipSelect.Open(this->currentShipId, this->currentType);
+        return;
+    }
+
+    // Ship type selection (A/B/C)
+    if (this->typeA.Hovering())
+    {
+        this->SwapType(0);
+        return;
+    }
+    if (this->typeB.Hovering())
+    {
+        this->SwapType(1);
+        return;
+    }
+    if (this->typeC.Hovering())
+    {
+        this->SwapType(2);
+        return;
+    }
+
+    // Advanced Edition toggle
+    if (this->advancedOffButton.Hovering())
+    {
+        G_->GetSettings()->bDlcEnabled = false;
+        this->currentShip->CheckDlcEnabled();
+        this->advancedOffButton.SetActive(false);
+        this->advancedOnButton.SetActive(true);
+        return;
+    }
+    if (this->advancedOnButton.Hovering())
+    {
+        G_->GetSettings()->bDlcEnabled = true;
+        this->currentShip->CheckDlcEnabled();
+        this->advancedOffButton.SetActive(true);
+        this->advancedOnButton.SetActive(false);
+        return;
+    }
+
+    // Random ship selection
+    if (this->randomButton.Hovering())
+    {
+        std::vector<int> possibleShips;
+        for (int i = 0; i < 30; ++i)
+        {
+            if (G_->GetScoreKeeper()->GetShipUnlocked(i % 10, i / 10))
+            {
+                possibleShips.push_back(i);
+            }
+        }
+
+        int selected_ship_data = possibleShips[random32() % possibleShips.size()];
+        int shipId = selected_ship_data % 10;
+        int shipType = selected_ship_data / 10;
+
+        this->currentShipId = shipId;
+
+        if (this->currentShip)
+        {
+            this->currentShip->destructor2();
+        }
+
+        this->SwitchShip(shipId, shipType);
+        return;
+    }
 }
 
 HOOK_METHOD(ShipBuilder, MouseClick, (int x, int y) -> void)
