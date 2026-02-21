@@ -161,6 +161,12 @@ HOOK_METHOD_PRIORITY(ShipManager, ImportShip, -1000, (int fileHelper) -> void)
     }
 }
 
+HOOK_METHOD(ShipManager, AddInitialCrew, (std::vector<CrewBlueprint>& blueprints) -> void)
+{
+    LOG_HOOK("HOOK_METHOD -> ShipManager::AddInitialCrew -> Begin (CustomShips.cpp)\n")
+    super(blueprints);
+}
+
 HOOK_METHOD(ShipManager, AddSystem, (int systemId) -> int)
 {
     LOG_HOOK("HOOK_METHOD -> ShipManager::AddSystem -> Begin (CustomShips.cpp)\n")
@@ -197,6 +203,7 @@ HOOK_METHOD(ShipManager, AddSystem, (int systemId) -> int)
 HOOK_METHOD_PRIORITY(ShipManager, OnInit, 100, (ShipBlueprint *bp, int shipLevel) -> int)
 {
     LOG_HOOK("HOOK_METHOD_PRIORITY -> ShipManager::OnInit -> Begin (CustomShips.cpp)\n")
+
     int ret = super(bp, shipLevel);
 
     SM_EX(this)->Initialize();
