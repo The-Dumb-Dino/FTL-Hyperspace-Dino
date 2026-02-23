@@ -72,6 +72,10 @@ std::string CrashReporter::CreateBugReportZip()
     {
         std::string savePrefix = SaveFileHandler::instance->savePrefix;
 
+        // Add each file if it exists (check user folder and current execution folder)
+        // Currently execution folder is used on Windows and Linux
+        fs::path currentFolder = fs::current_path();
+
         // Hardcoded files to include in bug report
         std::vector<std::string> filesToAdd = {
             "settings.ini",
@@ -90,6 +94,10 @@ std::string CrashReporter::CreateBugReportZip()
         for (const auto& filename : filesToAdd)
         {
             fs::path filePath = userFolder / filename;
+            // If not in save folder -> probably in execution folder (like on Windows/Linux)
+            if (!fs::exists(filePath))
+                filePath = currentFolder / filename;
+
             if (fs::exists(filePath))
             {
                 FILE* file = fopen(filePath.string().c_str(), "rb");
