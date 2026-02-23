@@ -7190,27 +7190,44 @@ HOOK_METHOD(ShipManager, ClearStatusSystem, (int system) -> void)
     }
 }
 
-/*
 // Death Event
 
 bool deathEventActive = false;
 
-HOOK_METHOD(WorldManager, UpdateLocation0, (LocationEvent *loc) -> void)
+HOOK_METHOD(WorldManager, UpdateLocation, (LocationEvent *loc) -> void)
 {
     LOG_HOOK("HOOK_METHOD -> WorldManager::UpdateLocation0 -> Begin (CustomEvents.cpp)\n")
     if (deathEventActive) return UpdateLocation(loc);
-    return super(loc);
+    return super(loc);  // Added s skip to the rewrite in CustomStore.cpp if deathEventActive is true
 }
 
-HOOK_METHOD(WorldManager, CreateChoiceBox0, (LocationEvent *event) -> void)
+HOOK_METHOD(WorldManager, CreateChoiceBox, (LocationEvent *event) -> void)
 {
-    LOG_HOOK("HOOK_METHOD -> WorldManager::CreateChoiceBox0 -> Begin (CustomEvents.cpp)\n")
+    LOG_HOOK("HOOK_METHOD -> WorldManager::CreateChoiceBox -> Begin (CustomEvents.cpp)\n")
     if (deathEventActive) return CreateChoiceBox(event);
     return super(event);
 }
-*/
 
-bool deathEventActive = false;
+#ifdef __APPLE__
+// Should eventually do a clean rewrite
+HOOK_METHOD_PRIORITY(WorldManager, CreateChoiceBox, 9999, (LocationEvent *event) -> void)
+{
+    LOG_HOOK("HOOK_METHOD_PRIORITY -> WorldManager::CreateChoiceBox -> Begin (CustomEvents.cpp)\n")
+    
+    if (!deathEventActive) // related to the hook above
+    {
+        // I performed an assembly patch to skip this
+        // check so that I can reimplement it with
+        // a skip when deathEventActive is true
+        if (this->playerShip->shipManager->bDestroyed) // Actually virtual bool ShipManager::GetIsDying()
+        {
+            return;
+        }
+    }
+    return super(event);
+}
+#endif
+
 HOOK_METHOD(GameOver, OpenText, (const std::string &text) -> void)
 {
     LOG_HOOK("HOOK_METHOD -> GameOver::OpenText -> Begin (CustomEvents.cpp)\n")

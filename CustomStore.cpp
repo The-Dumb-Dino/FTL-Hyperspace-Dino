@@ -4,6 +4,7 @@
 #include "CustomShipSelect.h"
 #include "CustomSystems.h"
 #include "Store_Extend.h"
+#include "CustomEvents.h"
 #include <boost/lexical_cast.hpp>
 #include <boost/algorithm/string/replace.hpp>
 #include <array>
@@ -2105,10 +2106,14 @@ HOOK_METHOD_PRIORITY(WorldManager, UpdateLocation, 9999, (LocationEvent* event) 
 {
     LOG_HOOK("HOOK_METHOD_PRIORITY -> WorldManager::UpdateLocation -> Begin (CustomStore.cpp)\n")
     
-    if (this->playerShip->shipManager->bDestroyed) // Actually virtual bool ShipManager::GetIsDying()
+    if (!deathEventActive) // Skip Related to CustomEvents.cpp Death Event code
     {
-        return;
+        if (this->playerShip->shipManager->bDestroyed) // Actually virtual bool ShipManager::GetIsDying()
+        {
+            return;
+        }
     }
+    
 
     if (event->ship.present)
     {
