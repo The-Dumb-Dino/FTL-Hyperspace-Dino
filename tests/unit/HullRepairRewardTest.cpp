@@ -1,89 +1,65 @@
 #include "../utils/TestUtils.h"
 #include "../../Global.h"
+#include "../../CustomEvents.h"
 
 /**
  * Test: Hull Repair Reward Window
  *
- * Tests that hull repair shows "Hull already repaired" when hull is full.
- * Uses proper event flow through WorldManager::CreateChoiceBox.
+ * Verifies hull repair is clamped to 0 when hull is already full.
+ * Uses RunCommand("EVENT ...") to go through the full game code path.
  */
 
 static void HullRepairRewardTest(TestFramework::Test& test, TestFramework::TestStages& stages)
 {
     test.section("Hull Repair Reward Window Test");
 
-    // Verify game started
     stages.addStage("Verify game started", [&test]() {
         test.assertTrue(GameAccess::State::isInGame(), "Game is running");
         test.requireNotNull(GameAccess::State::getPlayerShip(), "Player ship exists");
     }, 0);
 
-    // Verify hull is at max before test
     stages.addStage("Verify hull is full", [&test]() {
         ShipManager* ship = G_->GetShipManager(0);
         test.requireNotNull(ship, "Player ship accessible");
-
-        int currentHull = ship->ship.hullIntegrity.first;
-        int maxHull = ship->ship.hullIntegrity.second;
-
-        test.log("Hull before test: " + std::to_string(currentHull) + "/" + std::to_string(maxHull));
-        test.requireEquals(currentHull, maxHull, "Hull is at maximum");
+        test.requireEquals(ship->ship.hullIntegrity.first, ship->ship.hullIntegrity.second, "Hull is at maximum");
     }, 0);
 
-    // Create and show reward event with 30 hull repair using proper event flow
-    stages.addStage("Create hull repair event", [&test]() {
-        WorldManager* world = G_->GetWorld();
-        test.requireNotNull(world, "WorldManager available");
+    stages.addStage("Register hull repair event", [&test]() {
+        static bool registered = false;
+        if (registered) return;
 
-        // Create a LocationEvent with hull repair
-        LocationEvent event;
-        event.stuff.hullDamage = -30;  // 30 hull repair
-        event.stuff.systemId = -1;     // No system reward
-        event.text.data = "A friendly ship offers to repair your hull!";
-        event.text.isLiteral = true;
+        EventTemplate* event = new EventTemplate();
+        event->text.data = "Test hull repair event";
+        event->text.isLiteral = true;
+        event->eventName = "TEST_HULL_REPAIR_EVENT";
 
-        // Add a choice
-        LocationEvent* choiceEvent = new LocationEvent();
-        choiceEvent->text.data = "Continue...";
-        choiceEvent->text.isLiteral = true;
-        ChoiceReq req;
-        event.AddChoice(choiceEvent, "Accept the repair", req, false);
+        EventDamage damage;
+        damage.system = -1;
+        damage.amount = -30;
+        damage.effect = 0;
+        event->damage.push_back(damage);
 
-        // Use proper event flow - this should go through ModifyResources
-        world->CreateChoiceBox(&event);
+        G_->GetEventGenerator()->events["TEST_HULL_REPAIR_EVENT"] = event;
+        registered = true;
+    }, 0);
 
-        test.log("Created hull repair event with proper event flow");
-    }, 50);
-
-    // Verify hull state from dialogue's ResourceEvent
-    stages.addStage("Verify dialogue hull data", [&test]() {
+    stages.addStage("Load hull repair event", [&test]() {
         CommandGui* gui = GameAccess::State::getCommandGui();
         test.requireNotNull(gui, "CommandGui available");
 
-        // Access the ResourceEvent stored in the ChoiceBox
+        std::string cmd = "EVENT TEST_HULL_REPAIR_EVENT";
+        gui->RunCommand(cmd);
+    }, 50);
+
+    stages.addStage("Verify hull repair is clamped", [&test]() {
+        CommandGui* gui = GameAccess::State::getCommandGui();
+        test.requireNotNull(gui, "CommandGui available");
+        test.assertTrue(gui->choiceBox.bOpen, "Dialogue is open");
+
         int hullDamage = gui->choiceBox.rewards.hullDamage;
-
-        // Get actual hull state
-        ShipManager* ship = G_->GetShipManager(0);
-        test.requireNotNull(ship, "Player ship accessible");
-        int currentHull = ship->ship.hullIntegrity.first;
-        int maxHull = ship->ship.hullIntegrity.second;
-
-        test.log("Dialogue hullDamage: " + std::to_string(hullDamage));
-        test.log("Ship hull: " + std::to_string(currentHull) + "/" + std::to_string(maxHull));
-
-        // When hull is full, hullDamage should be 0 (adjusted by ModifyResources)
-        // If this fails, the bug is confirmed
-        test.assertTrue(hullDamage == 0 || currentHull < maxHull,
-            "Hull repair should be 0 when hull is full");
+        test.log("hullDamage: " + std::to_string(hullDamage));
+        test.assertTrue(hullDamage == 0, "Hull repair should be 0 when hull is full");
     }, 0);
-
-    // Wait and take screenshot
-    stages.addStage("Take screenshot", [&test]() {
-        TestHelpers::takeScreenshot("hull_repair_reward_test.bmp");
-        test.log("Screenshot taken");
-    }, 20);
 }
 
-// Auto-register with seeded gameplay
 static TestFramework::TestRegistrar _("HullRepairReward", HullRepairRewardTest, "NewGameSeeded");
