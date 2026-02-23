@@ -2139,7 +2139,7 @@ HOOK_METHOD_PRIORITY(WorldManager, UpdateLocation, 9999, (LocationEvent* event) 
     this->CreateStore(event);
 
     int damageCount = 0;
-    for (EventDamage damage : event->damage)
+    for (EventDamage& damage : event->damage)
     {
         damage.amount = this->PossibleDamage(damage);
         damageCount += damage.amount;
@@ -2254,7 +2254,7 @@ HOOK_METHOD_PRIORITY(WorldManager, CreateLocation, 9999, (Location* loc) -> void
     if (!this->bLoadingGame)
     {
         int damageCount = 0;
-        for (EventDamage damage : event->damage)
+        for (EventDamage& damage : event->damage)
         {
             damage.amount = this->PossibleDamage(damage);
             damageCount += damage.amount;
