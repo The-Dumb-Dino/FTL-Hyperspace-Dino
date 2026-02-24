@@ -66,7 +66,8 @@ void CrashDetector::WriteCrashFlag()
 void CrashDetector::ClearCrashFlag()
 {
     std::string crashFlagPath = GetCrashFlagPath();
-    if (HasCrashedLastLaunch())
+    // delete if exists
+    if (FileHelper::fileExists(crashFlagPath))
     {
         FileHelper::deleteFile(crashFlagPath);
         hs_log_file("Crash flag cleared - game exited normally (was: %s)\n", crashFlagPath.c_str());

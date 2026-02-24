@@ -11,6 +11,34 @@ HOOK_METHOD(CApp, OnExit, () -> void)
     super();
 }
 
+HOOK_METHOD(CApp, OnRequestExit, () -> void)
+{
+    LOG_HOOK("HOOK_METHOD -> CApp::OnRequestExit -> Begin (CrashDetectionHooks.cpp)\n")
+    CrashReportFlow::GetInstance()->OnGameExit();
+    super();
+}
+
+// Clear crash flag if user exits using menu options. (Fixes bug on Windows where OnExit is not called)
+HOOK_METHOD_PRIORITY(CApp, OnLoop, -9999, () -> void)
+{
+    LOG_HOOK("HOOK_METHOD -> CApp::OnLoop -> Begin (CrashDetectionHooks.cpp)\n")
+    
+    if (this->menu.bOpen == true)
+    {
+        if (this->menu.finalChoice == 2)
+        {
+            CrashReportFlow::GetInstance()->OnGameExit();
+        }
+    }
+
+    if (this->gui && this->gui->menuBox.command == 8)
+    {
+        CrashReportFlow::GetInstance()->OnGameExit();
+    }
+
+    super();   
+}
+
 // === MainMenu Hooks ===
 
 // Initialize crash detection and show dialog on menu open
