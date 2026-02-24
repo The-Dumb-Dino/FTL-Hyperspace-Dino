@@ -326,6 +326,15 @@ static void MerchantJumpSaveTest(TestFramework::Test& test, TestFramework::TestS
         test.log("\n========== END STORE INVENTORY ==========\n");
         test.pass("Logged all store items");
     }, 10);
+
+    // Close store
+    stages.addStage("Close store", [&test]() {
+        CommandGui* gui = GameAccess::State::getCommandGui();
+        test.requireNotNull(gui, "CommandGui is available");
+
+        gui->storeScreens.Close();
+        test.pass("Store closed via CommandGui");
+    }, 10);
 }
 
 // Auto-register (commented out - for MV testing)

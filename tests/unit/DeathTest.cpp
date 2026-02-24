@@ -60,7 +60,18 @@ static void DeathTest(TestFramework::Test& test, TestFramework::TestStages& stag
     stages.addStage("Wait and screenshot", [&test]() {
         TestHelpers::takeScreenshot("death_test_gameover");
         test.log("Screenshot taken after game over");
-    }, 300);
+    }, 500);
+
+    stages.addStage("Close game over dialogue", [&test]() {
+        auto& gameOver = G_->GetCApp()->gui->gameOverScreen;
+        if (gameOver.bOpen)
+        {
+            // Go to menu and close game over dialogue
+            G_->GetCApp()->menu.Open();
+            gameOver.Close();
+            test.log("Opened menu and closed game over dialogue");
+        }
+    }, 50);
 }
 
 static TestFramework::TestRegistrar _("DeathTest", DeathTest, "NewGameSeeded");

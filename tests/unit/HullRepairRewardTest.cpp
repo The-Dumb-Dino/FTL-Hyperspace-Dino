@@ -60,6 +60,14 @@ static void HullRepairRewardTest(TestFramework::Test& test, TestFramework::TestS
         test.log("hullDamage: " + std::to_string(hullDamage));
         test.assertTrue(hullDamage == 0, "Hull repair should be 0 when hull is full");
     }, 0);
+
+    stages.addStage("Close dialogue", [&test]() {
+        CommandGui* gui = GameAccess::State::getCommandGui();
+        if (gui->choiceBox.bOpen)
+        {
+            gui->choiceBox.KeyDown(SDLK_1);
+        }
+    }, 10);
 }
 
 static TestFramework::TestRegistrar _("HullRepairReward", HullRepairRewardTest, "NewGameSeeded");
