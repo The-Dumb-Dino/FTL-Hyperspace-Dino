@@ -2105,15 +2105,14 @@ std::array<std::string, 10> vanillaShipNames =
 HOOK_METHOD_PRIORITY(WorldManager, UpdateLocation, 9999, (LocationEvent* event) -> void)
 {
     LOG_HOOK("HOOK_METHOD_PRIORITY -> WorldManager::UpdateLocation -> Begin (CustomStore.cpp)\n")
-    
-    if (!deathEventActive) // Skip Related to CustomEvents.cpp Death Event code
+
+    /* 
+    // Commented out because of CustomEvents.cpp Death Event
+    if (this->playerShip->shipManager->bDestroyed) // Actually virtual bool ShipManager::GetIsDying()
     {
-        if (this->playerShip->shipManager->bDestroyed) // Actually virtual bool ShipManager::GetIsDying()
-        {
-            return;
-        }
+        return;
     }
-    
+    */
 
     if (event->ship.present)
     {
