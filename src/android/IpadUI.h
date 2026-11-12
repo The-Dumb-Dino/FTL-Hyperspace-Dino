@@ -1,5 +1,6 @@
 #pragma once
 #include "Global.h"
+#include <set>
 
 namespace IpadUI
 {
@@ -23,7 +24,7 @@ namespace IpadUI
     inline int PriceButtonY(InfoBox &info, int fallback)
     {
         WindowFrame *frame = info.primaryBox;
-        if (!frame) return fallback;
+        if (!frame || info.IsEmpty()) return fallback;
         int y = info.location.y + info.primaryBoxOffset + frame->rect.y + frame->rect.h - 6;
         if (info.pCrewBlueprint && info.bDetailed) y -= 40;
         return y;
@@ -56,5 +57,25 @@ namespace IpadUI
     {
         CApp *app = G_->GetCApp();
         return app->screen_y > 0 ? 512 + app->screen_x * 384 / app->screen_y : 1024;
+    }
+
+    inline float ScreenWidth()
+    {
+        return 2 * ScreenRight() - 1024;
+    }
+
+    inline bool PackageHas(const std::string &name)
+    {
+        static std::set<std::string> files;
+        PackageModuleInfo *package = G_->GetResources()->package;
+        if (files.empty() && package)
+        {
+            package->list_files_start(package);
+            for (const char *file = package->list_files_next(package); file; file = package->list_files_next(package))
+            {
+                files.insert(file);
+            }
+        }
+        return files.count(name) > 0;
     }
 }

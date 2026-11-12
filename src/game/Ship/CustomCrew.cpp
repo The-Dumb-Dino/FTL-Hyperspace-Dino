@@ -6414,9 +6414,30 @@ HOOK_METHOD(CrewControl, RButton, (int mX, int mY, bool shiftHeld) -> void)
 }
 
 #ifdef HS_ANDROID
+static bool g_touchSelectingCrew = false;
+
+HOOK_METHOD(CrewDrone, IsDrone, () -> bool)
+{
+    LOG_HOOK("HOOK_METHOD -> CrewDrone::IsDrone -> Begin (CustomCrew.cpp)\n")
+    if (g_touchSelectingCrew && static_cast<CrewMember*>(this)->GetControllable()) return false;
+    return super();
+}
+
 HOOK_METHOD(CrewControl, OnTouch, (TouchAction action, int id, int x, int y, int wX, int wY, int initialX, int initialY, bool allowCrewSelection) -> void)
 {
     LOG_HOOK("HOOK_METHOD -> CrewControl::OnTouch -> Begin (CustomCrew.cpp)\n")
+    if (action == TOUCH_DOWN && selectedCrew.empty())
+    {
+        g_touchSelectingCrew = true;
+        bool friendlyCrew = !crewBoxes.empty() || std::any_of(shipManager->vCrewList.begin(), shipManager->vCrewList.end(), [](CrewMember *crew)
+        {
+            return !crew->GetIntruder() && !crew->IsDead() && !crew->IsDrone() && (crew->crewAnim->status != 6 || crew->crewAnim->anims[0][6].tracker.reverse);
+        });
+        super(action, id, x, y, wX, wY, initialX, initialY, allowCrewSelection && friendlyCrew);
+        g_touchSelectingCrew = false;
+        return;
+    }
+
     bool onPowerButton = crystalButtonActive && crystalButton.bActive && IpadUI::Contains(crystalButton.hitbox, x, y);
     if (action != TOUCH_UP || id != activeTouch || selectedCrew.empty() || doorControlMode || selectedDoor || onPowerButton)
     {
@@ -6524,7 +6545,9 @@ HOOK_METHOD(CrewControl, OnLoop, () -> void)
     ShipManager *ship = G_->GetShipManager(crew->currentShipId);
     if (!ship || crew->iRoomId < 0 || crew->iRoomId >= (int)ship->ship.vRoomList.size()) return;
     const Globals::Rect &room = ship->ship.vRoomList[crew->iRoomId]->rect;
-    Point center = crystalButton.position + crystalButtonCenter;
+    Pointf roomCenter = ship->ship.GetRoomCenter(crew->iRoomId);
+    Point shipPosition = ship == shipManager ? combatControl->playerShipPosition : combatControl->GetEnemyPosition();
+    Point center(shipPosition.x + roomCenter.x, shipPosition.y + roomCenter.y);
     Point size = crystalButtonCenter + crystalButtonCenter;
     int left = center.x + room.w / 2 + 4;
     if (left + size.x > IpadUI::ScreenRight()) left = center.x - room.w / 2 - 4 - size.x;

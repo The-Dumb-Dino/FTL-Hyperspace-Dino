@@ -1270,6 +1270,10 @@ void CustomShipSelect::OnRender(bool renderSelect)
                     std::string lockImgName = "customizeUI/miniship_" + bp->imgFile + "_base.png";
                     bool useLockImg = CustomOptionsManager::GetInstance()->altLockedMiniships.currentValue && button->bShipLocked && G_->GetResources()->ImageExists(lockImgName);
                     button->iShipImage = G_->GetResources()->GetImageId(useLockImg ? lockImgName : "customizeUI/miniship_" + bp->imgFile + ".png");
+#ifdef HS_ANDROID
+                    button->bSelected = x->GetId() == shipSelect->selectedShip;
+                    button->SetActiveImage(G_->GetResources()->GetImageId(button->bSelected ? "customizeUI/ship_list_button_select2.png" : "customizeUI/ship_list_button_on.png"));
+#endif
                     button->OnRender();
                 }
             }
@@ -1397,7 +1401,9 @@ void CustomShipSelect::OnRender(bool renderSelect)
         }
     }
 
+#ifndef HS_ANDROID
     shipSelect->infoBox.OnRender();
+#endif
 
     if (shipSelect->tutorial.bOpen)
     {
@@ -2403,10 +2409,10 @@ HOOK_METHOD(ShipSelect, OnTouch, (TouchAction action, int id, int x, int y, int 
     customSel->OnTouch(action, id, x, y, initialX, initialY);
     super(action, id, x, y, initialX, initialY);
 
-    if (bConfirmed && selectedShip >= 100)
+    ShipBuilder &builder = G_->GetCApp()->menu.shipBuilder;
+    if (bConfirmed && selectedShip >= 100 && this == &builder.shipSelect)
     {
         bConfirmed = false;
-        ShipBuilder &builder = G_->GetCApp()->menu.shipBuilder;
         if (builder.currentShip)
         {
             builder.currentShip->destructor2();
@@ -2423,6 +2429,11 @@ HOOK_METHOD(ShipSelect, SelectShip, (int shipType) -> void)
         return super(-1);
     }
     super(shipType);
+    if (shipType >= 100 && currentType == 0 && !G_->GetScoreKeeper()->GetShipUnlocked(shipType, 0))
+    {
+        ShipBlueprint *bp = G_->GetBlueprints()->GetShipBlueprint(G_->GetScoreKeeper()->GetShipBlueprint(shipType), -1);
+        infoBox.SetText(infoBox.desc.title.GetText(), bp->unlock.GetText(), 360, 176, InfoBox::ExpandDir::EXPAND_DOWN);
+    }
 }
 #endif
 
@@ -2969,7 +2980,85 @@ HOOK_METHOD_PRIORITY(ShipBuilder, CreateEquipmentBoxes, 9999, () -> void)
 #endif
 }
 
+static Button* reactorInfoButton = nullptr;
+static Point reactorInfoPos = {335, 380};
+
 #ifdef HS_ANDROID
+struct HangarAchievementSpot
+{
+    Globals::Rect rect;
+    CAchievement *ach;
+    int selection;
+};
+static std::vector<HangarAchievementSpot> g_hangarAchievementSpots;
+static bool g_hangarAchievementTouched = false;
+static HangarAchievementSpot g_hangarTouched;
+static bool g_reactorInfoTouched = false;
+
+static void NoteHangarAchievement(CAchievement *ach, Point pos, int size, int selection)
+{
+    if (ach) g_hangarAchievementSpots.push_back({Globals::Rect(pos.x, pos.y, size, size), ach, selection});
+}
+
+static bool UsePcHangarBackground()
+{
+    return IpadUI::PackageHas("img/customizeUI/custom_background.png") && !IpadUI::PackageHas("img/ipad/customizeUI/custom_background.png");
+}
+
+HOOK_METHOD(ResourceControl, GetImageId, (const std::string& name) -> GL_Texture*)
+{
+    LOG_HOOK("HOOK_METHOD -> ResourceControl::GetImageId -> Begin (CustomShipSelect.cpp)\n")
+    if (name == "ipad/customizeUI/custom_background.png" && UsePcHangarBackground())
+    {
+        GL_Texture *tex = super("customizeUI/custom_background.png");
+        if (tex)
+        {
+            tex->width_ = 1376;
+            tex->height_ = 768;
+        }
+        return tex;
+    }
+    return super(name);
+}
+
+static void ShowReactorInfo(ShipBuilder *builder)
+{
+    auto def = CustomShipSelect::GetInstance()->GetDefinition(builder->currentShip->myBlueprint.blueprintName);
+    std::string reactorDescText = G_->GetTextLibrary()->GetText("reactor_desc") + "\n\n" +
+                                  boost::algorithm::replace_all_copy(G_->GetTextLibrary()->GetText("reactor_desc_start"), "\\1", std::to_string(PowerManager::GetPowerManager(0)->currentPower.second)) + "\n" +
+                                  boost::algorithm::replace_all_copy(G_->GetTextLibrary()->GetText("reactor_desc_max"), "\\1", std::to_string(def.maxReactorLevel));
+    builder->infoBox.SetText(G_->GetTextLibrary()->GetText("upgrade_reactor"), reactorDescText, -1, -1, InfoBox::EXPAND_DOWN);
+}
+
+HOOK_METHOD_PRIORITY(ShipBuilder, OnTouch, -100, (TouchAction action, int id, int x, int y, int initialX, int initialY) -> void)
+{
+    LOG_HOOK("HOOK_METHOD_PRIORITY -> ShipBuilder::OnTouch -> Begin (CustomShipSelect.cpp)\n")
+    bool hangarOnly = !shipSelect.bOpen && !bRenaming && !introScreen.bOpen;
+    if (action == TOUCH_DOWN)
+    {
+        if (g_hangarAchievementTouched) selectedAch = -1;
+        g_hangarAchievementTouched = false;
+        if (g_reactorInfoTouched) infoBox.Clear();
+        g_reactorInfoTouched = false;
+    }
+    super(action, id, x, y, initialX, initialY);
+    if (hangarOnly && action == TOUCH_DOWN)
+    {
+        for (const HangarAchievementSpot &spot : g_hangarAchievementSpots)
+        {
+            if (IpadUI::Contains(spot.rect, x, y))
+            {
+                g_hangarTouched = spot;
+                g_hangarAchievementTouched = true;
+                break;
+            }
+        }
+        g_reactorInfoTouched = !g_hangarAchievementTouched && reactorInfoButton && CustomOptionsManager::GetInstance()->showReactor.currentValue && IpadUI::Contains(reactorInfoButton->hitbox, x, y);
+    }
+    if (g_hangarAchievementTouched) selectedAch = g_hangarTouched.selection;
+    if (g_reactorInfoTouched) ShowReactorInfo(this);
+}
+
 HOOK_METHOD(ShipBuilder, OnTouch, (TouchAction action, int id, int x, int y, int initialX, int initialY) -> void)
 {
     LOG_HOOK("HOOK_METHOD -> ShipBuilder::OnTouch -> Begin (CustomShipSelect.cpp)\n")
@@ -3079,9 +3168,6 @@ HOOK_METHOD(TextLibrary, GetText, (const std::string &name, const std::string &l
     return ret;
 }
 
-static Button* reactorInfoButton = nullptr;
-static Point reactorInfoPos = {335, 380};
-
 struct HangarLayout
 {
     Point ship, layout, crew, weapons, drones, augments, augPage, achievements, advanced, noWeapons, noDrones;
@@ -3135,6 +3221,10 @@ HOOK_METHOD_PRIORITY(ShipBuilder, OnRender, 1000, () -> void)
     for (auto i : CustomShipSelect::GetInstance()->customAnims)
     {
         CSurface::GL_PushMatrix();
+#ifdef HS_ANDROID
+        CSurface::GL_Translate(-176.f, 0.f);
+        CSurface::GL_Scale(1376.f / 1280.f, 768.f / 720.f, 1.f);
+#endif
         CSurface::GL_Translate(i.first.x, i.first.y);
 
         i.second->OnRender(1.f, COLOR_WHITE, false);
@@ -3392,6 +3482,9 @@ HOOK_METHOD_PRIORITY(ShipBuilder, OnRender, 1000, () -> void)
 
     // Do victory/quest achievements and regular ship achievements
 
+#ifdef HS_ANDROID
+    g_hangarAchievementSpots.clear();
+#endif
     ShipButtonDefinition *shipButtonDef = nullptr;
     std::string finalName;
 
@@ -3433,6 +3526,9 @@ HOOK_METHOD_PRIORITY(ShipBuilder, OnRender, 1000, () -> void)
         if (ach)
         {
             ach->OnRender(Point(244, 438 + g_hangarLayout.achievementsY), selectedAch == 3 ? 2 : 3, 1);
+#ifdef HS_ANDROID
+            NoteHangarAchievement(ach, Point(244, 438 + g_hangarLayout.achievementsY), 32, 3);
+#endif
         }
 
         ach = nullptr;
@@ -3454,6 +3550,9 @@ HOOK_METHOD_PRIORITY(ShipBuilder, OnRender, 1000, () -> void)
         if (ach)
         {
             ach->OnRender(Point(244, 404 + g_hangarLayout.achievementsY), selectedAch == 4 ? 2 : 3, 1);
+#ifdef HS_ANDROID
+            NoteHangarAchievement(ach, Point(244, 404 + g_hangarLayout.achievementsY), 32, 4);
+#endif
         }
 
         if (showShipAchievements)
@@ -3467,6 +3566,9 @@ HOOK_METHOD_PRIORITY(ShipBuilder, OnRender, 1000, () -> void)
                 for (CAchievement* ach: customShipAchievements)
                 {
                     ach->OnRender(Point(126 - 35*maxCounter + 70*counter, 404 + g_hangarLayout.achievementsY), selectedAch == counter, 1);
+#ifdef HS_ANDROID
+                    NoteHangarAchievement(ach, Point(126 - 35*maxCounter + 70*counter, 404 + g_hangarLayout.achievementsY), 64, counter);
+#endif
                     if (++counter >= maxCounter) break;
                 }
             }
@@ -3514,6 +3616,9 @@ HOOK_METHOD_PRIORITY(ShipBuilder, OnRender, 1000, () -> void)
             int b = i/6;
 
             ach->OnRender(Point(124 - 17*(b==max_b ? max_a : 6) + 34*a, 437 + g_hangarLayout.achievementsY - 17*((victoryTypes.size()+5)/6) + 34*b), selectedAch == -i-2 ? 2 : 3, 1);
+#ifdef HS_ANDROID
+            NoteHangarAchievement(ach, Point(124 - 17*(b==max_b ? max_a : 6) + 34*a, 437 + g_hangarLayout.achievementsY - 17*((victoryTypes.size()+5)/6) + 34*b), 32, -i-2);
+#endif
         }
     }
 
@@ -3525,7 +3630,12 @@ HOOK_METHOD_PRIORITY(ShipBuilder, OnRender, 1000, () -> void)
         {
             if (!SeedInputBox::seedsAllowUnlocks)
             {
+#ifdef HS_ANDROID
+                G_->GetResources()->RenderImage(unlocksDisabledTexture, startButton.hitbox.x + startButton.hitbox.w - unlocksDisabledTexture->width_,
+                                                easyButton.hitbox.y - 12 - unlocksDisabledTexture->height_, 0, COLOR_WHITE, 1.f, false);
+#else
                 CSurface::GL_RenderPrimitive(unlocksDisabledPrimitive);
+#endif
             }
 
             SeedInputBox::seedInput->OnRender(0, Point((int)SeedInputBox::drawLocation.x+2+(SeedInputBox::width/2), (int)SeedInputBox::drawLocation.y+5));
@@ -3533,13 +3643,19 @@ HOOK_METHOD_PRIORITY(ShipBuilder, OnRender, 1000, () -> void)
         else
         {
 #ifdef HS_ANDROID
-            freetype::easy_printCenter(14, SeedInputBox::drawLocation.x+2+(SeedInputBox::width/2), SeedInputBox::drawLocation.y-6, SeedInputBox::prompt);
+            freetype::easy_printCenter(14, SeedInputBox::drawLocation.x+2+(SeedInputBox::width/2), SeedInputBox::drawLocation.y-10, SeedInputBox::prompt);
 #else
             SeedInputBox::seedInput->OnRender(14, Point((int)SeedInputBox::drawLocation.x+2+(SeedInputBox::width/2), (int)SeedInputBox::drawLocation.y-6));
 #endif
         }
     }
 
+#ifdef HS_ANDROID
+    if (!sysBoxes.empty())
+    {
+        reactorInfoPos = Point(sysBoxes[0]->location.x - 26, sysBoxes[0]->location.y - 45);
+    }
+#endif
 	if (!reactorInfoButton)
     {
         reactorInfoButton = new Button();
@@ -3547,6 +3663,10 @@ HOOK_METHOD_PRIORITY(ShipBuilder, OnRender, 1000, () -> void)
         reactorInfoButton->bActive = true;
         reactorInfoButton->SetLocation(Point(reactorInfoPos.x, reactorInfoPos.y));
     }
+#ifdef HS_ANDROID
+    reactorInfoButton->SetLocation(reactorInfoPos);
+    reactorInfoButton->bSelected = g_reactorInfoTouched;
+#endif
 
 	if (CustomOptionsManager::GetInstance()->showReactor.currentValue)
     {
@@ -3588,6 +3708,14 @@ HOOK_METHOD_PRIORITY(ShipBuilder, OnRender, 1000, () -> void)
     else
     {
         infoBox.OnRender();
+#ifdef HS_ANDROID
+        if (g_hangarAchievementTouched)
+        {
+            G_->GetAchievementTracker()->SetTooltip(g_hangarTouched.ach);
+            G_->GetMouseControl()->QueueStaticTooltip(Point(g_hangarTouched.rect.x, g_hangarTouched.rect.y + g_hangarTouched.rect.h + 4));
+            G_->GetMouseControl()->InstantTooltip();
+        }
+#endif
     }
 
     introScreen.OnRender();
